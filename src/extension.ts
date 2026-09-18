@@ -7,7 +7,7 @@ import { SidebarTranslationViewProvider } from './views/sidebarProvider';
 import { TranslationTabPanel } from './views/tabPanelProvider';
 
 export function activate(context: vscode.ExtensionContext): void {
-  const secretService = new SecretService(context.secrets);
+  const secretService = new SecretService(context.secrets, context.globalState);
   const translatorFactory = new TranslatorFactory(secretService);
   const translateCommands = new TranslateCommands(translatorFactory, secretService);
 
@@ -33,6 +33,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }),
     vscode.commands.registerCommand('vscode-translate.openSettings', () => {
       sidebarProvider.openSettings();
+      TranslationTabPanel.currentPanel?.openSettings();
     }),
     vscode.commands.registerCommand('vscode-translate.openTab', () => {
       const editor = vscode.window.activeTextEditor;

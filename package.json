@@ -210,6 +210,16 @@
           "type": "boolean",
           "default": true,
           "description": "Enable automatic translation tooltip when hovering over selected text."
+        },
+        "vscodeTranslate.deeplApiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional DeepL API Authentication Key. (Can also be set via the translation panel ⚙️ Settings dialog or `Translate: Set API Key`)."
+        },
+        "vscodeTranslate.geminiApiKey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Optional Google Gemini API Key. (Can also be set via the translation panel ⚙️ Settings dialog or `Translate: Set API Key`)."
         }
       }
     }

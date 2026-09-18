@@ -237,6 +237,10 @@ export class TranslationTabPanel {
     });
   }
 
+  public openSettings(): void {
+    this._panel.webview.postMessage({ command: 'openSettings' });
+  }
+
   public setInitialText(text: string): void {
     this._panel.webview.postMessage({ command: 'setInitialText', text });
   }

@@ -6,3 +6,9 @@ out/
 .vscode-test/
 coverage/
 *.log
+.env
+.env.*
+*.key
+*.pem
+*.keystore
+GoogleService-Info.plist

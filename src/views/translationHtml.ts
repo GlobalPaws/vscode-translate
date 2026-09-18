@@ -876,7 +876,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         </div>
       </div>
     </div>
-    <button class="btn-settings-gear" id="btnOpenSettings" title="Settings" aria-label="Settings">⚙</button>
   </div>
 
   <!-- Translation Main Grid -->
@@ -1423,8 +1422,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         delete: "Удалить"
       }
     };
-
-    let currentPanelLang = '${panelLanguage}';
 
     const ALL_LANGS = ${JSON.stringify(ALL_LANGUAGES)};
 
