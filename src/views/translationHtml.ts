@@ -386,29 +386,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       display: inline-block;
     }
 
-    .btn-settings-gear {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 5px;
-      font-size: 15px;
-      cursor: pointer;
-      color: var(--text-color);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    .btn-settings-gear:hover {
-      background: var(--btn-hover);
-      border-color: var(--primary-color);
-    }
-
     /* Translation Main Container */
     .translation-container {
       display: grid;
@@ -492,25 +469,12 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: none;
       transition: all 0.15s ease;
     }
 
-    .lang-dropdown-wrapper:hover .lang-dropdown-btn {
+    .lang-dropdown-btn:hover {
       background: var(--btn-hover);
       color: var(--text-color);
-    }
-
-    .lang-dropdown-select {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      -webkit-appearance: menulist;
-      appearance: menulist;
     }
 
     .swap-btn-container {
@@ -822,6 +786,158 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       justify-content: space-between;
       padding: 4px 0;
     }
+
+    /* Language Picker Modal */
+    .lang-picker-content {
+      width: 92%;
+      max-width: 620px;
+      height: 70vh;
+      max-height: 520px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 12px;
+      box-sizing: border-box;
+    }
+
+    .lang-picker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 2px;
+    }
+
+    .lang-picker-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .lang-search-icon {
+      position: absolute;
+      left: 10px;
+      font-size: 13px;
+      color: var(--subtext-color);
+      pointer-events: none;
+    }
+
+    .lang-search-input {
+      width: 100%;
+      padding: 8px 30px 8px 32px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-color);
+      font-size: 13px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+
+    .lang-search-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 1px var(--primary-color);
+    }
+
+    .btn-clear-search {
+      position: absolute;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: var(--subtext-color);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 3px 6px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-clear-search:hover {
+      color: var(--text-color);
+      background: var(--btn-hover);
+    }
+
+    .lang-picker-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      padding-right: 4px;
+    }
+
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 6px;
+    }
+
+    .lang-item-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 7px 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text-color);
+      font-size: 12.5px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s ease;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    .lang-item-btn:hover {
+      background: var(--btn-hover);
+      border-color: var(--border-color);
+    }
+
+    .lang-item-btn.selected {
+      background: var(--active-tab-bg);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .lang-item-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .lang-item-check {
+      font-size: 12px;
+      color: var(--primary-color);
+      display: none;
+    }
+
+    .lang-item-btn.selected .lang-item-check {
+      display: inline-block;
+    }
+
+    .lang-no-match {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--subtext-color);
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -890,11 +1006,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         <button class="lang-chip ${defaultSource === 'ja' ? 'active' : ''}" data-source="ja" id="chipSourceJa">Japanese</button>
         <button class="lang-chip ${defaultSource === 'vi' ? 'active' : ''}" data-source="vi" id="chipSourceVi">Vietnamese</button>
         <div class="lang-dropdown-wrapper" title="More languages">
-          <button class="lang-dropdown-btn" aria-label="More languages">▾</button>
-          <select id="sourceDropdown" class="lang-dropdown-select" title="More languages">
-            <option value="" disabled selected hidden></option>
-            ${languageOptionsHtml}
-          </select>
+          <button class="lang-dropdown-btn" id="btnSourceMore" aria-label="More languages" title="More languages">▾</button>
         </div>
       </div>
 
@@ -922,11 +1034,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         <button class="lang-chip ${defaultTarget === 'en' ? 'active' : ''}" data-target="en" id="chipTargetEn">English</button>
         <button class="lang-chip ${defaultTarget === 'ja' ? 'active' : ''}" data-target="ja" id="chipTargetJa">Japanese</button>
         <div class="lang-dropdown-wrapper" title="More languages">
-          <button class="lang-dropdown-btn" aria-label="More languages">▾</button>
-          <select id="targetDropdown" class="lang-dropdown-select" title="More languages">
-            <option value="" disabled selected hidden></option>
-            ${languageOptionsHtml}
-          </select>
+          <button class="lang-dropdown-btn" id="btnTargetMore" aria-label="More languages" title="More languages">▾</button>
         </div>
       </div>
 
@@ -950,6 +1058,24 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
   </div>
 
   <div class="error-banner" id="errorBanner"></div>
+
+  <!-- Language Picker Modal -->
+  <div class="modal-overlay" id="langPickerModal">
+    <div class="modal-content lang-picker-content">
+      <div class="lang-picker-header">
+        <h3 id="langPickerTitle">Select Language</h3>
+        <button class="btn-close-modal" id="btnCloseLangPicker" title="Close">✕</button>
+      </div>
+      <div class="lang-search-box">
+        <span class="lang-search-icon">🔍</span>
+        <input type="text" id="langSearchInput" class="lang-search-input" placeholder="Search languages..." autocomplete="off" />
+        <button id="btnClearLangSearch" class="btn-clear-search" style="display: none;" title="Clear search">✕</button>
+      </div>
+      <div class="lang-picker-body">
+        <div class="lang-grid" id="langGridContainer"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Settings Modal Dialog -->
   <div class="modal-overlay" id="settingsModal">
@@ -1058,6 +1184,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
   <script>
     const vscode = acquireVsCodeApi();
     let currentPanelLang = '${panelLanguage}';
+    let currentSourceLang = '${defaultSource}';
+    let currentTargetLang = '${defaultTarget}';
+    let activePickerType = null; // 'source' | 'target'
+    let debounceTimer = null;
+    let lastTranslatedResult = '';
 
     // i18n Dictionaries
     const I18N = {
@@ -1089,7 +1220,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Not Configured",
         done: "Done",
         save: "Save",
-        delete: "Delete"
+        delete: "Delete",
+        selectSourceLang: "Select Source Language",
+        selectTargetLang: "Select Target Language",
+        searchLang: "Search languages...",
+        noMatchLang: "No matching languages found"
       },
       ja: {
         brandTitle: "Google 翻訳 (IDE Edition)",
@@ -1119,7 +1254,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "未設定",
         done: "完了",
         save: "保存",
-        delete: "削除"
+        delete: "削除",
+        selectSourceLang: "翻訳元言語を選択",
+        selectTargetLang: "翻訳先言語を選択",
+        searchLang: "言語を検索...",
+        noMatchLang: "一致する言語が見つかりません"
       },
       zh: {
         brandTitle: "Google 翻译 (IDE Edition)",
@@ -1149,7 +1288,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "未配置",
         done: "完成",
         save: "保存",
-        delete: "删除"
+        delete: "删除",
+        selectSourceLang: "选择源语言",
+        selectTargetLang: "选择目标语言",
+        searchLang: "搜索语言...",
+        noMatchLang: "未找到匹配的语言"
       },
       ko: {
         brandTitle: "Google 번역 (IDE Edition)",
@@ -1179,7 +1322,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "미설정",
         done: "완료",
         save: "저장",
-        delete: "삭제"
+        delete: "삭제",
+        selectSourceLang: "출발어 선택",
+        selectTargetLang: "도착어 선택",
+        searchLang: "언어 검색...",
+        noMatchLang: "일치하는 언어가 없습니다"
       },
       vi: {
         brandTitle: "Google Dịch (Phiên bản IDE)",
@@ -1209,7 +1356,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Chưa cấu hình",
         done: "Xong",
         save: "Lưu",
-        delete: "Xóa"
+        delete: "Xóa",
+        selectSourceLang: "Chọn ngôn ngữ nguồn",
+        selectTargetLang: "Chọn ngôn ngữ đích",
+        searchLang: "Tìm kiếm ngôn ngữ...",
+        noMatchLang: "Không tìm thấy ngôn ngữ phù hợp"
       },
       de: {
         brandTitle: "Google Übersetzer (IDE Edition)",
@@ -1239,7 +1390,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Nicht konfiguriert",
         done: "Fertig",
         save: "Speichern",
-        delete: "Löschen"
+        delete: "Löschen",
+        selectSourceLang: "Ausgangssprache auswählen",
+        selectTargetLang: "Zielsprache auswählen",
+        searchLang: "Sprachen suchen...",
+        noMatchLang: "Keine passenden Sprachen gefunden"
       },
       es: {
         brandTitle: "Google Traductor (IDE Edition)",
@@ -1269,7 +1424,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "No configurado",
         done: "Listo",
         save: "Guardar",
-        delete: "Eliminar"
+        delete: "Eliminar",
+        selectSourceLang: "Seleccionar idioma de origen",
+        selectTargetLang: "Seleccionar idioma de destino",
+        searchLang: "Buscar idiomas...",
+        noMatchLang: "No se encontraron idiomas coincidentes"
       },
       fr: {
         brandTitle: "Google Traduction (IDE Edition)",
@@ -1299,7 +1458,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Non configuré",
         done: "Terminé",
         save: "Enregistrer",
-        delete: "Supprimer"
+        delete: "Supprimer",
+        selectSourceLang: "Sélectionner la langue source",
+        selectTargetLang: "Sélectionner la langue cible",
+        searchLang: "Rechercher des langues...",
+        noMatchLang: "Aucune langue correspondante trouvée"
       },
       hi: {
         brandTitle: "Google अनुवाद (IDE Edition)",
@@ -1329,7 +1492,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "कॉन्फ़िगर नहीं किया गया",
         done: "पूर्ण",
         save: "सहेजें",
-        delete: "हटाएं"
+        delete: "हटाएं",
+        selectSourceLang: "स्रोत भाषा चुनें",
+        selectTargetLang: "लक्ष्य भाषा चुनें",
+        searchLang: "भाषा खोजें...",
+        noMatchLang: "कोई मेल खाती भाषा नहीं मिली"
       },
       it: {
         brandTitle: "Google Traduttore (IDE Edition)",
@@ -1359,7 +1526,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Non configurato",
         done: "Fatto",
         save: "Salva",
-        delete: "Elimina"
+        delete: "Elimina",
+        selectSourceLang: "Seleziona lingua di partenza",
+        selectTargetLang: "Seleziona lingua di destinazione",
+        searchLang: "Cerca lingue...",
+        noMatchLang: "Nessuna lingua corrispondente trovata"
       },
       pt: {
         brandTitle: "Google Tradutor (IDE Edition)",
@@ -1389,7 +1560,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Não configurado",
         done: "Concluído",
         save: "Salvar",
-        delete: "Excluir"
+        delete: "Excluir",
+        selectSourceLang: "Selecionar idioma de origem",
+        selectTargetLang: "Selecionar idioma de destino",
+        searchLang: "Pesquisar idiomas...",
+        noMatchLang: "Nenhum idioma correspondente encontrado"
       },
       ru: {
         brandTitle: "Google Переводчик (IDE Edition)",
@@ -1419,11 +1594,78 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         notConfigured: "Не настроено",
         done: "Готово",
         save: "Сохранить",
-        delete: "Удалить"
+        delete: "Удалить",
+        selectSourceLang: "Выберите исходный язык",
+        selectTargetLang: "Выберите язык перевода",
+        searchLang: "Поиск языков...",
+        noMatchLang: "Подходящих языков не найдено"
       }
     };
 
     const ALL_LANGS = ${JSON.stringify(ALL_LANGUAGES)};
+
+    // DOM Elements Cache
+    const sourceText = document.getElementById('sourceText');
+    const targetText = document.getElementById('targetText');
+    const charCount = document.getElementById('charCount');
+    const btnSwap = document.getElementById('btnSwap');
+    const btnClearSource = document.getElementById('btnClearSource');
+    const btnCopy = document.getElementById('btnCopy');
+    const btnInsert = document.getElementById('btnInsert');
+    const btnSourceSpeech = document.getElementById('btnSourceSpeech');
+    const btnTargetSpeech = document.getElementById('btnTargetSpeech');
+    const providerSelect = document.getElementById('providerSelect');
+    const chipSourceSelected = document.getElementById('chipSourceSelected');
+    const chipTargetSelected = document.getElementById('chipTargetSelected');
+    const btnSourceMore = document.getElementById('btnSourceMore');
+    const btnTargetMore = document.getElementById('btnTargetMore');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const errorBanner = document.getElementById('errorBanner');
+
+    // Custom Provider Elements
+    const providerDropdownWrapper = document.getElementById('providerDropdownWrapper');
+    const providerCurrentBtn = document.getElementById('providerCurrentBtn');
+    const providerOptionsMenu = document.getElementById('providerOptionsMenu');
+    const providerCurrentIcon = document.getElementById('providerCurrentIcon');
+    const providerCurrentLabel = document.getElementById('providerCurrentLabel');
+    const providerOptionItems = document.querySelectorAll('.provider-option-item');
+
+    const providerIcons = {
+      'google-free': '${options.googleIconUri || ''}',
+      'deepl': '${options.deeplIconUri || ''}',
+      'gemini': '${options.geminiIconUri || ''}'
+    };
+
+    const providerLabels = {
+      'google-free': 'Google (Free / Online)',
+      'deepl': 'DeepL API',
+      'gemini': 'Google Gemini AI'
+    };
+
+    // Language Picker Modal elements
+    const langPickerModal = document.getElementById('langPickerModal');
+    const langPickerTitle = document.getElementById('langPickerTitle');
+    const btnCloseLangPicker = document.getElementById('btnCloseLangPicker');
+    const langSearchInput = document.getElementById('langSearchInput');
+    const btnClearLangSearch = document.getElementById('btnClearLangSearch');
+    const langGridContainer = document.getElementById('langGridContainer');
+
+    // Settings Modal elements
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const btnDoneModal = document.getElementById('btnDoneModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const panelLangSelect = document.getElementById('panelLangSelect');
+    const defaultSourceSelect = document.getElementById('defaultSourceSelect');
+    const defaultTargetSelect = document.getElementById('defaultTargetSelect');
+    const deeplInput = document.getElementById('deeplInput');
+    const btnSaveDeepl = document.getElementById('btnSaveDeepl');
+    const btnDeleteDeepl = document.getElementById('btnDeleteDeepl');
+    const deeplBadge = document.getElementById('deeplBadge');
+    const geminiInput = document.getElementById('geminiInput');
+    const btnSaveGemini = document.getElementById('btnSaveGemini');
+    const btnDeleteGemini = document.getElementById('btnDeleteGemini');
+    const geminiBadge = document.getElementById('geminiBadge');
+    const hoverCheckbox = document.getElementById('hoverCheckbox');
 
     function getShortLanguageName(code) {
       if (code === 'auto') {
@@ -1470,22 +1712,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       };
 
       const optionsHtml = buildOptions();
-      const sDrop = document.getElementById('sourceDropdown');
-      const tDrop = document.getElementById('targetDropdown');
       const defSrc = document.getElementById('defaultSourceSelect');
       const defTgt = document.getElementById('defaultTargetSelect');
-
-      const currentSrcVal = sDrop ? sDrop.value : '';
-      const currentTgtVal = tDrop ? tDrop.value : '';
-
-      if (sDrop) {
-        sDrop.innerHTML = '<option value="" disabled selected hidden></option>' + optionsHtml;
-        if (currentSrcVal) sDrop.value = currentSrcVal;
-      }
-      if (tDrop) {
-        tDrop.innerHTML = '<option value="" disabled selected hidden></option>' + optionsHtml;
-        if (currentTgtVal) tDrop.value = currentTgtVal;
-      }
 
       if (defSrc) {
         const curDefSrc = defSrc.value;
@@ -1498,6 +1726,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         const curDefTgt = defTgt.value;
         defTgt.innerHTML = optionsHtml;
         if (curDefTgt) defTgt.value = curDefTgt;
+      }
+
+      if (typeof renderLanguageGrid === 'function' && typeof langPickerModal !== 'undefined' && langPickerModal && langPickerModal.classList.contains('active')) {
+        renderLanguageGrid(typeof langSearchInput !== 'undefined' && langSearchInput ? langSearchInput.value : '');
       }
     }
 
@@ -1545,62 +1777,18 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       setSafeText('btnSaveGemini', t.save);
       setSafeText('btnDeleteGemini', t.delete);
 
+      const searchInputEl = document.getElementById('langSearchInput');
+      if (searchInputEl) {
+        searchInputEl.placeholder = t.searchLang || 'Search languages...';
+      }
+      if (typeof activePickerType !== 'undefined' && activePickerType) {
+        setSafeText('langPickerTitle', activePickerType === 'source' ? t.selectSourceLang : t.selectTargetLang);
+      }
+
       updateDropdownOptions(lang);
     }
 
-    applyI18n(currentPanelLang);
-
-    const sourceText = document.getElementById('sourceText');
-    const targetText = document.getElementById('targetText');
-    const charCount = document.getElementById('charCount');
-    const btnSwap = document.getElementById('btnSwap');
-    const btnClearSource = document.getElementById('btnClearSource');
-    const btnCopy = document.getElementById('btnCopy');
-    const btnInsert = document.getElementById('btnInsert');
-    const btnSourceSpeech = document.getElementById('btnSourceSpeech');
-    const btnTargetSpeech = document.getElementById('btnTargetSpeech');
-    const providerSelect = document.getElementById('providerSelect');
-    const sourceDropdown = document.getElementById('sourceDropdown');
-    const targetDropdown = document.getElementById('targetDropdown');
-    const chipSourceSelected = document.getElementById('chipSourceSelected');
-    const chipTargetSelected = document.getElementById('chipTargetSelected');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const errorBanner = document.getElementById('errorBanner');
-
-    // Modal elements
-    const btnOpenSettings = document.getElementById('btnOpenSettings');
-    const btnCloseModal = document.getElementById('btnCloseModal');
-    const btnDoneModal = document.getElementById('btnDoneModal');
-    const settingsModal = document.getElementById('settingsModal');
-    const panelLangSelect = document.getElementById('panelLangSelect');
-    const defaultSourceSelect = document.getElementById('defaultSourceSelect');
-    const defaultTargetSelect = document.getElementById('defaultTargetSelect');
-    const deeplInput = document.getElementById('deeplInput');
-    const btnSaveDeepl = document.getElementById('btnSaveDeepl');
-    const btnDeleteDeepl = document.getElementById('btnDeleteDeepl');
-    const deeplBadge = document.getElementById('deeplBadge');
-    const geminiInput = document.getElementById('geminiInput');
-    const btnSaveGemini = document.getElementById('btnSaveGemini');
-    const btnDeleteGemini = document.getElementById('btnDeleteGemini');
-    const geminiBadge = document.getElementById('geminiBadge');
-    const hoverCheckbox = document.getElementById('hoverCheckbox');
-
-    let currentSourceLang = '${defaultSource}';
-    let currentTargetLang = '${defaultTarget}';
-    let debounceTimer = null;
-    let lastTranslatedResult = '';
-
-    // Request initial settings state
-    vscode.postMessage({ command: 'getSettings' });
-
     // Settings Modal handlers
-    if (btnOpenSettings) {
-      btnOpenSettings.addEventListener('click', () => {
-        vscode.postMessage({ command: 'getSettings' });
-        settingsModal.classList.add('active');
-      });
-    }
-
     btnCloseModal.addEventListener('click', () => {
       settingsModal.classList.remove('active');
     });
@@ -1669,7 +1857,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         ? '.lang-chip[data-source]:not([data-source-dynamic])'
         : '.lang-chip[data-target]:not([data-target-dynamic])';
       const fixedChips = document.querySelectorAll(fixedSelector);
-      const dropdown = isSource ? sourceDropdown : targetDropdown;
 
       let matchedFixed = false;
       fixedChips.forEach(b => {
@@ -1686,14 +1873,12 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         dynamicChip.style.display = 'none';
         dynamicChip.classList.remove('active');
         dynamicChip.removeAttribute(isSource ? 'data-source' : 'data-target');
-        dropdown.value = '';
       } else {
         const label = getShortLanguageName(lang);
         dynamicChip.textContent = label;
         dynamicChip.setAttribute(isSource ? 'data-source' : 'data-target', lang);
         dynamicChip.style.display = 'inline-flex';
         dynamicChip.classList.add('active');
-        dropdown.value = lang || '';
       }
     }
 
@@ -1718,19 +1903,200 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     setupChips('.lang-chip[data-source]', true);
     setupChips('.lang-chip[data-target]', false);
 
-    sourceDropdown.addEventListener('change', () => {
-      if (sourceDropdown.value) {
-        currentSourceLang = sourceDropdown.value;
+    // Language Picker Logic
+    function getDisplayLanguageList(langCode) {
+      let dnUser = null;
+      let dnEn = null;
+      try {
+        dnUser = new Intl.DisplayNames([langCode, 'en'], { type: 'language' });
+        dnEn = new Intl.DisplayNames(['en'], { type: 'language' });
+      } catch (e) {
+        // fallback
+      }
+
+      return ALL_LANGS.map(item => {
+        let label = item.name.split(' (')[0];
+        let enLabel = label;
+        if (dnEn) {
+          const en = dnEn.of(item.code);
+          if (en && en.toLowerCase() !== item.code.toLowerCase()) {
+            enLabel = en;
+          }
+        }
+        if (dnUser) {
+          const loc = dnUser.of(item.code);
+          if (loc && loc.toLowerCase() !== item.code.toLowerCase()) {
+            label = loc;
+          } else if (enLabel) {
+            label = enLabel;
+          }
+        }
+        return {
+          code: item.code,
+          name: label,
+          rawName: item.name,
+          enName: enLabel
+        };
+      });
+    }
+
+    function renderLanguageGrid(query = '') {
+      if (!langGridContainer) return;
+      langGridContainer.innerHTML = '';
+
+      const t = I18N[currentPanelLang] || I18N.en;
+      const isSource = activePickerType === 'source';
+      const currentLang = isSource ? currentSourceLang : currentTargetLang;
+      const list = getDisplayLanguageList(currentPanelLang);
+
+      const itemsToRender = [];
+      if (isSource) {
+        itemsToRender.push({
+          code: 'auto',
+          name: t.chipAuto || 'Detect Language',
+          rawName: 'Auto Detect',
+          enName: 'Detect Language'
+        });
+      }
+      itemsToRender.push(...list);
+
+      const q = query.trim().toLowerCase();
+      const filtered = q
+        ? itemsToRender.filter(item =>
+            item.name.toLowerCase().includes(q) ||
+            item.code.toLowerCase().includes(q) ||
+            item.rawName.toLowerCase().includes(q) ||
+            (item.enName && item.enName.toLowerCase().includes(q))
+          )
+        : itemsToRender;
+
+      if (filtered.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'lang-no-match';
+        emptyDiv.textContent = t.noMatchLang || 'No matching languages found';
+        langGridContainer.appendChild(emptyDiv);
+        return;
+      }
+
+      filtered.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'lang-item-btn';
+        btn.type = 'button';
+        if (item.code === currentLang) {
+          btn.classList.add('selected');
+        }
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'lang-item-name';
+        nameSpan.textContent = item.name;
+        btn.appendChild(nameSpan);
+
+        const checkSpan = document.createElement('span');
+        checkSpan.className = 'lang-item-check';
+        checkSpan.textContent = '✓';
+        btn.appendChild(checkSpan);
+
+        btn.addEventListener('click', () => {
+          selectPickerLanguage(item.code);
+        });
+
+        langGridContainer.appendChild(btn);
+      });
+    }
+
+    function openLanguagePicker(type) {
+      activePickerType = type;
+      const t = I18N[currentPanelLang] || I18N.en;
+      if (langPickerTitle) {
+        langPickerTitle.textContent = type === 'source'
+          ? (t.selectSourceLang || 'Select Source Language')
+          : (t.selectTargetLang || 'Select Target Language');
+      }
+      if (langSearchInput) {
+        langSearchInput.value = '';
+        langSearchInput.placeholder = t.searchLang || 'Search languages...';
+      }
+      if (btnClearLangSearch) {
+        btnClearLangSearch.style.display = 'none';
+      }
+      renderLanguageGrid('');
+      if (langPickerModal) {
+        langPickerModal.classList.add('active');
+      }
+      setTimeout(() => {
+        if (langSearchInput) langSearchInput.focus();
+      }, 50);
+    }
+
+    function closeLanguagePicker() {
+      if (langPickerModal) {
+        langPickerModal.classList.remove('active');
+      }
+      activePickerType = null;
+    }
+
+    function selectPickerLanguage(code) {
+      if (activePickerType === 'source') {
+        currentSourceLang = code;
         updateLangUi(currentSourceLang, true);
         triggerTranslation(true);
-      }
-    });
-
-    targetDropdown.addEventListener('change', () => {
-      if (targetDropdown.value) {
-        currentTargetLang = targetDropdown.value;
+      } else if (activePickerType === 'target') {
+        currentTargetLang = code;
         updateLangUi(currentTargetLang, false);
         triggerTranslation(true);
+      }
+      closeLanguagePicker();
+    }
+
+    if (btnSourceMore) {
+      btnSourceMore.addEventListener('click', () => openLanguagePicker('source'));
+    }
+    if (btnTargetMore) {
+      btnTargetMore.addEventListener('click', () => openLanguagePicker('target'));
+    }
+    if (btnCloseLangPicker) {
+      btnCloseLangPicker.addEventListener('click', closeLanguagePicker);
+    }
+    if (langPickerModal) {
+      langPickerModal.addEventListener('click', (e) => {
+        if (e.target === langPickerModal) closeLanguagePicker();
+      });
+    }
+    if (btnClearLangSearch && langSearchInput) {
+      btnClearLangSearch.addEventListener('click', () => {
+        langSearchInput.value = '';
+        btnClearLangSearch.style.display = 'none';
+        renderLanguageGrid('');
+        langSearchInput.focus();
+      });
+    }
+    if (langSearchInput) {
+      langSearchInput.addEventListener('input', () => {
+        if (btnClearLangSearch) {
+          btnClearLangSearch.style.display = langSearchInput.value ? 'flex' : 'none';
+        }
+        renderLanguageGrid(langSearchInput.value);
+      });
+      langSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const firstBtn = langGridContainer ? langGridContainer.querySelector('.lang-item-btn') : null;
+          if (firstBtn) {
+            firstBtn.click();
+            e.preventDefault();
+          }
+        }
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (langPickerModal && langPickerModal.classList.contains('active')) {
+          closeLanguagePicker();
+          e.preventDefault();
+        } else if (settingsModal && settingsModal.classList.contains('active')) {
+          settingsModal.classList.remove('active');
+          e.preventDefault();
+        }
       }
     });
 
@@ -1836,25 +2202,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         window.speechSynthesis.speak(u);
       }
     });
-
-    const providerDropdownWrapper = document.getElementById('providerDropdownWrapper');
-    const providerCurrentBtn = document.getElementById('providerCurrentBtn');
-    const providerOptionsMenu = document.getElementById('providerOptionsMenu');
-    const providerCurrentIcon = document.getElementById('providerCurrentIcon');
-    const providerCurrentLabel = document.getElementById('providerCurrentLabel');
-    const providerOptionItems = document.querySelectorAll('.provider-option-item');
-
-    const providerIcons = {
-      'google-free': '${options.googleIconUri || ''}',
-      'deepl': '${options.deeplIconUri || ''}',
-      'gemini': '${options.geminiIconUri || ''}'
-    };
-
-    const providerLabels = {
-      'google-free': 'Google (Free / Online)',
-      'deepl': 'DeepL API',
-      'gemini': 'Google Gemini AI'
-    };
 
     function updateCustomProviderUi(value) {
       if (providerCurrentIcon && providerIcons[value]) {
@@ -1981,6 +2328,19 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         errorBanner.style.display = 'block';
       }
     });
+
+    // Initial Setup
+    try {
+      applyI18n(currentPanelLang);
+      updateLangUi(currentSourceLang, true);
+      updateLangUi(currentTargetLang, false);
+      if (providerSelect) {
+        updateCustomProviderUi(providerSelect.value);
+      }
+      vscode.postMessage({ command: 'getSettings' });
+    } catch (err) {
+      console.error('Error during initial UI setup:', err);
+    }
   </script>
 </body>
 </html>`;
