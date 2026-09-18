@@ -54,6 +54,7 @@ describe('translationHtml script runtime and interaction tests', () => {
         const classes = new Set<string>();
         elements[id] = {
           id,
+          value: '',
           style: {},
           classList: {
             add: (c: string) => classes.add(c),
@@ -154,5 +155,14 @@ describe('translationHtml script runtime and interaction tests', () => {
     expect(typeof sourceMoreBtn.onclick).toBe('function');
     sourceMoreBtn.onclick?.();
     expect(langPickerModal.classList.contains('active')).toBe(true);
+
+    // Verify 500-char limit and placeholder for google-free
+    const sourceTextEl = elements['sourceText'];
+    const charCountEl = elements['charCount'];
+    expect(sourceTextEl).toBeDefined();
+    expect(charCountEl).toBeDefined();
+    expect(sourceTextEl.maxLength).toBe(500);
+    expect(sourceTextEl.placeholder).toContain('500');
+    expect(charCountEl.textContent).toContain('500');
   });
 });

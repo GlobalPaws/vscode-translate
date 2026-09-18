@@ -558,6 +558,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       color: var(--subtext-color);
     }
 
+    #charCount.exceeded {
+      color: var(--error-color, #ea4335);
+      font-weight: 600;
+    }
+
     .footer-actions {
       display: flex;
       align-items: center;
@@ -1011,7 +1016,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       </div>
 
       <div class="content-area">
-        <textarea id="sourceText" class="source-text" placeholder="Type or paste text to translate..." autofocus></textarea>
+        <textarea id="sourceText" class="source-text" placeholder="${
+          currentProvider === 'google-free'
+            ? 'Type or paste text to translate... (Max 500 chars)'
+            : 'Type or paste text to translate...'
+        }" maxlength="${currentProvider === 'google-free' ? '500' : '5000'}" autofocus></textarea>
       </div>
 
       <div class="card-footer">
@@ -1019,7 +1028,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           <button id="btnSourceSpeech" class="icon-btn" title="Listen">🔊</button>
           <button id="btnClearSource" class="icon-btn" title="Clear"><span id="txtBtnClear">✕ Clear</span></button>
         </div>
-        <div id="charCount">0 / 5,000</div>
+        <div id="charCount">0 / ${currentProvider === 'google-free' ? '500' : '5,000'}</div>
       </div>
     </div>
 
@@ -1186,6 +1195,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     let currentPanelLang = '${panelLanguage}';
     let currentSourceLang = '${defaultSource}';
     let currentTargetLang = '${defaultTarget}';
+    let currentProvider = '${currentProvider}';
     let activePickerType = null; // 'source' | 'target'
     let debounceTimer = null;
     let lastTranslatedResult = '';
@@ -1202,6 +1212,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamese",
         optMore: "▼ More",
         sourcePlaceholder: "Type or paste text to translate...",
+        sourcePlaceholderFree: "Type or paste text to translate... (Max 500 chars)",
         targetPlaceholder: "Translation will appear here in real-time...",
         btnClear: "✕ Clear",
         btnCopy: "📋 Copy",
@@ -1236,6 +1247,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "ベトナム語",
         optMore: "▼ その他",
         sourcePlaceholder: "テキストを入力または貼り付け...",
+        sourcePlaceholderFree: "テキストを入力または貼り付け...（最大500文字）",
         targetPlaceholder: "翻訳がここにリアルタイムで表示されます...",
         btnClear: "✕ クリア",
         btnCopy: "📋 コピー",
@@ -1270,6 +1282,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "越南语",
         optMore: "▼ 更多",
         sourcePlaceholder: "输入或粘贴要翻译的文本...",
+        sourcePlaceholderFree: "输入或粘贴要翻译的文本...（最多500字）",
         targetPlaceholder: "翻译结果将在此实时显示...",
         btnClear: "✕ 清空",
         btnCopy: "📋 复制",
@@ -1304,6 +1317,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "베트남어",
         optMore: "▼ 더보기",
         sourcePlaceholder: "번역할 텍스트를 입력하거나 붙여넣으세요...",
+        sourcePlaceholderFree: "번역할 텍스트를 입력하거나 붙여넣으세요... (최대 500자)",
         targetPlaceholder: "번역 결과가 실시간으로 여기에 표시됩니다...",
         btnClear: "✕ 지우기",
         btnCopy: "📋 복사",
@@ -1338,6 +1352,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Tiếng Việt",
         optMore: "▼ Khác",
         sourcePlaceholder: "Nhập hoặc dán văn bản để dịch...",
+        sourcePlaceholderFree: "Nhập hoặc dán văn bản để dịch... (Tối đa 500 ký tự)",
         targetPlaceholder: "Bản dịch sẽ hiển thị ở đây theo thời gian thực...",
         btnClear: "✕ Xóa",
         btnCopy: "📋 Sao chép",
@@ -1372,6 +1387,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamesisch",
         optMore: "▼ Mehr",
         sourcePlaceholder: "Text zum Übersetzen eingeben oder einfügen...",
+        sourcePlaceholderFree: "Text zum Übersetzen eingeben oder einfügen... (Max. 500 Zeichen)",
         targetPlaceholder: "Die Übersetzung erscheint hier in Echtzeit...",
         btnClear: "✕ Löschen",
         btnCopy: "📋 Kopieren",
@@ -1406,6 +1422,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamita",
         optMore: "▼ Más",
         sourcePlaceholder: "Escribe o pega el texto para traducir...",
+        sourcePlaceholderFree: "Escribe o pega el texto para traducir... (Máx. 500 caracteres)",
         targetPlaceholder: "La traducción aparecerá aquí en tiempo real...",
         btnClear: "✕ Limpiar",
         btnCopy: "📋 Copiar",
@@ -1440,6 +1457,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamien",
         optMore: "▼ Plus",
         sourcePlaceholder: "Saisissez ou collez le texte à traduire...",
+        sourcePlaceholderFree: "Saisissez ou collez le texte à traduire... (Max 500 caractères)",
         targetPlaceholder: "La traduction apparaîtra ici en temps réel...",
         btnClear: "✕ Effacer",
         btnCopy: "📋 Copier",
@@ -1474,6 +1492,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "वियतनामी",
         optMore: "▼ और अधिक",
         sourcePlaceholder: "अनुवाद करने के लिए टेक्स्ट टाइप या पेस्ट करें...",
+        sourcePlaceholderFree: "अनुवाद करने के लिए टेक्स्ट टाइप या पेस्ट करें... (अधिकतम 500 वर्ण)",
         targetPlaceholder: "अनुवाद यहां वास्तविक समय में दिखाई देगा...",
         btnClear: "✕ साफ़ करें",
         btnCopy: "📋 कॉपी करें",
@@ -1508,6 +1527,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamita",
         optMore: "▼ Altro",
         sourcePlaceholder: "Digita o incolla il testo da tradurre...",
+        sourcePlaceholderFree: "Digita o incolla il testo da tradurre... (Max 500 caratteri)",
         targetPlaceholder: "La traduzione apparirà qui in tempo reale...",
         btnClear: "✕ Cancella",
         btnCopy: "📋 Copia",
@@ -1542,6 +1562,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Vietnamita",
         optMore: "▼ Mais",
         sourcePlaceholder: "Digite ou cole o texto para traduzir...",
+        sourcePlaceholderFree: "Digite ou cole o texto para traduzir... (Máx. 500 caracteres)",
         targetPlaceholder: "A tradução aparecerá aqui em tempo real...",
         btnClear: "✕ Limpar",
         btnCopy: "📋 Copiar",
@@ -1576,6 +1597,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         chipVi: "Вьетнамский",
         optMore: "▼ Еще",
         sourcePlaceholder: "Введите или вставьте текст для перевода...",
+        sourcePlaceholderFree: "Введите или вставьте текст для перевода... (макс. 500 символов)",
         targetPlaceholder: "Перевод появится здесь в реальном времени...",
         btnClear: "✕ Очистить",
         btnCopy: "📋 Копировать",
@@ -1752,7 +1774,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       setSafeText('chipTargetJa', t.chipJa);
 
       const sourceEl = document.getElementById('sourceText');
-      if (sourceEl) sourceEl.placeholder = t.sourcePlaceholder;
+      if (sourceEl) {
+        const isFree = providerSelect ? providerSelect.value === 'google-free' : true;
+        sourceEl.placeholder = isFree && t.sourcePlaceholderFree ? t.sourcePlaceholderFree : t.sourcePlaceholder;
+      }
       const targetEl = document.getElementById('targetText');
       if (targetEl && targetEl.classList.contains('placeholder')) {
         targetEl.textContent = t.targetPlaceholder;
@@ -2102,8 +2127,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Realtime typing & Debounce (350ms)
     sourceText.addEventListener('input', () => {
-      const len = sourceText.value.length;
-      charCount.textContent = len.toLocaleString() + ' / 5,000';
+      updateCharCount();
       if (!sourceText.value.trim()) {
         const t = I18N[currentPanelLang] || I18N.en;
         targetText.textContent = t.targetPlaceholder;
@@ -2153,7 +2177,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       // Also swap text if target has result
       if (lastTranslatedResult) {
         sourceText.value = lastTranslatedResult;
-        charCount.textContent = sourceText.value.length + ' / 5,000';
+        updateCharCount();
       }
 
       triggerTranslation(true);
@@ -2166,7 +2190,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     btnClearSource.addEventListener('click', () => {
       const t = I18N[currentPanelLang] || I18N.en;
       sourceText.value = '';
-      charCount.textContent = '0 / 5,000';
+      updateCharCount();
       targetText.textContent = t.targetPlaceholder;
       targetText.classList.add('placeholder');
       lastTranslatedResult = '';
@@ -2203,6 +2227,38 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
     });
 
+    function getMaxCharLimit() {
+      const val = (providerSelect && providerSelect.value) ? providerSelect.value : currentProvider;
+      return val === 'google-free' ? 500 : 5000;
+    }
+
+    function updateCharCount() {
+      if (!sourceText || !charCount) return;
+      const maxLimit = getMaxCharLimit();
+      const val = sourceText.value || '';
+      const len = val.length;
+      charCount.textContent = len.toLocaleString() + ' / ' + maxLimit.toLocaleString();
+      if (len > maxLimit) {
+        charCount.classList.add('exceeded');
+      } else {
+        charCount.classList.remove('exceeded');
+      }
+    }
+
+    function updateProviderInputConstraints(value) {
+      if (!sourceText) return;
+      currentProvider = value || currentProvider;
+      const isFree = currentProvider === 'google-free';
+      sourceText.maxLength = isFree ? 500 : 5000;
+      const t = I18N[currentPanelLang] || I18N.en;
+      sourceText.placeholder = isFree && t.sourcePlaceholderFree ? t.sourcePlaceholderFree : t.sourcePlaceholder;
+
+      if (isFree && sourceText.value && sourceText.value.length > 500) {
+        sourceText.value = sourceText.value.substring(0, 500);
+      }
+      updateCharCount();
+    }
+
     function updateCustomProviderUi(value) {
       if (providerCurrentIcon && providerIcons[value]) {
         providerCurrentIcon.src = providerIcons[value];
@@ -2217,6 +2273,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           item.classList.remove('selected');
         }
       });
+      updateProviderInputConstraints(value);
     }
 
     if (providerCurrentBtn && providerOptionsMenu) {
@@ -2265,7 +2322,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
       if (msg.command === 'setInitialText' && msg.text) {
         sourceText.value = msg.text;
-        charCount.textContent = msg.text.length.toLocaleString() + ' / 5,000';
+        updateCharCount();
         triggerTranslation(true);
         return;
       }
@@ -2331,12 +2388,13 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Initial Setup
     try {
+      if (providerSelect && !providerSelect.value) {
+        providerSelect.value = currentProvider;
+      }
       applyI18n(currentPanelLang);
       updateLangUi(currentSourceLang, true);
       updateLangUi(currentTargetLang, false);
-      if (providerSelect) {
-        updateCustomProviderUi(providerSelect.value);
-      }
+      updateCustomProviderUi(currentProvider);
       vscode.postMessage({ command: 'getSettings' });
     } catch (err) {
       console.error('Error during initial UI setup:', err);

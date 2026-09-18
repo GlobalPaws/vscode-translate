@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=GlobalPaws.ai-multi-translate"><img src="https://img.shields.io/badge/marketplace-v0.1.5-blue.svg" alt="Marketplace" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=GlobalPaws.ai-multi-translate"><img src="https://img.shields.io/badge/marketplace-v0.1.6-blue.svg" alt="Marketplace" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" /></a>
 </p>
 
@@ -58,7 +58,7 @@ Supports **Google Translate (Free, no configuration needed)**, **DeepL API**, an
 
 | Provider | Free Tier Available? | How to Get Your API Key |
 |---|---|---|
-| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google Translate** | **100% Free** (No key needed) | Default engine. Zero setup required — works out of the box! |
+| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google Translate** | **100% Free** (No key needed) | Default engine. Zero setup required — works out of the box!<br>*(Note: Free tier has a 500-character query limit. For longer text or code, DeepL or Gemini is recommended.)* |
 | <img src="./media/deepl_icon.webp" width="18" height="18" valign="middle" /> **DeepL API** | **Free tier available**<br>(500,000 chars/month free) | 1. Sign up at [DeepL API Free](https://www.deepl.com/pro-api).<br>2. Navigate to **Account Settings** and copy your **Authentication Key** (ends with `:fx`).<br>3. Run `Translate: Set API Key` in VS Code or click ⚙️ in the sidebar panel. |
 | <img src="./media/google-gemini-icon.webp" width="18" height="18" valign="middle" /> **Google Gemini AI** | **Free tier available**<br>(Free quota in AI Studio) | 1. Sign in to [Google AI Studio](https://aistudio.google.com/) with your Google account.<br>2. Click **Get API key** -> **Create API key**.<br>3. Run `Translate: Set API Key` in VS Code or paste into the sidebar settings. |
 
@@ -88,7 +88,7 @@ Supports **Google Translate (Free, no configuration needed)**, **DeepL API**, an
 
 | プロバイダー | 無料プラン / 無料枠 | APIキーの取得と設定手順 |
 |---|---|---|
-| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google 翻訳** | **完全無料**（キー不要） | デフォルトエンジン。設定不要でインストール直後から利用可能！ |
+| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google 翻訳** | **完全無料**（キー不要） | デフォルトエンジン。設定不要でインストール直後から利用可能！<br>*(※無料枠のため1回あたり最大500文字まで。500文字を超える長文翻訳には DeepL または Gemini のご利用を推奨します)* |
 | <img src="./media/deepl_icon.webp" width="18" height="18" valign="middle" /> **DeepL API** | **無料プランあり**<br>（月500,000文字まで無料） | 1. [DeepL API 無料登録ページ](https://www.deepl.com/ja/pro-api) で無料アカウントを作成。<br>2. アカウント設定画面から **認証キー**（末尾が `:fx`）をコピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
 | <img src="./media/google-gemini-icon.webp" width="18" height="18" valign="middle" /> **Google Gemini AI** | **無料枠あり**<br>（AI Studioで無料利用可能） | 1. [Google AI Studio](https://aistudio.google.com/) にGoogleアカウントでログイン。<br>2. **「Get API key」** -> **「Create API key」** でキーを作成・コピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
 

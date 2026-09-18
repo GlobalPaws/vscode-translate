@@ -2,6 +2,13 @@
 
 All notable changes to the "ai-multi-translate" extension will be documented in this file.
 
+## [0.1.6] - 2026-09-18
+
+### Changed
+- Added 500-character input limit and dynamic counter switching when selecting Google (Free / Online) translation engine.
+- Added free-tier placeholder text (Max 500 characters) across all 12 supported UI languages.
+- Updated documentation and free-tier guide tables with character limit details and recommendations for DeepL / Gemini on longer texts.
+
 ## [0.1.5] - 2026-09-18
 
 ### Changed
