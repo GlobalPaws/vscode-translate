@@ -2,6 +2,14 @@
 
 All notable changes to the "ai-multi-translate" extension will be documented in this file.
 
+## [0.1.5] - 2026-09-18
+
+### Changed
+- Improved language picker with multi-column responsive grid layout and real-time search filtering.
+- Fixed Webview inline script initialization bug caused by Temporal Dead Zone (TDZ).
+- Removed duplicate settings button in the Webview header to align with VS Code native title bar navigation.
+- Added automated Webview runtime tests with Node.js VM to ensure UI script stability.
+
 ## [0.1.4] - 2026-09-18
 
 ### Changed
