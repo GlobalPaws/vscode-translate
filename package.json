@@ -1,0 +1,242 @@
+{
+  "name": "ai-multi-translate",
+  "displayName": "AI Multi-Translate",
+  "description": "Fast and intelligent in-editor translation powered by Google Translate, DeepL, and Gemini.",
+  "version": "0.1.2",
+  "publisher": "GlobalPaws",
+  "author": {
+    "name": "GlobalPaws"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GlobalPaws/vscode-translate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GlobalPaws/vscode-translate/issues"
+  },
+  "homepage": "https://github.com/GlobalPaws/vscode-translate#readme",
+  "icon": "media/icon.png",
+  "keywords": [
+    "translate",
+    "translation",
+    "deepl",
+    "google-translate",
+    "gemini",
+    "ai"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vscode-translate-sidebar",
+          "title": "AI Multi-Translate Panel",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "vscode-translate-sidebar": [
+        {
+          "type": "webview",
+          "id": "vscodeTranslate.sidebarView",
+          "name": "AI Multi-Translate Panel"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "vscode-translate.openSettings",
+        "title": "Settings",
+        "icon": "$(gear)",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.translateSelection",
+        "title": "AI Multi-Translate: Translate Selected Text (Popup / Replace)",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.replaceSelection",
+        "title": "AI Multi-Translate: Replace Selected Text with Translation",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.insertBelowSelection",
+        "title": "AI Multi-Translate: Insert Translation Below Selection",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.openSidebar",
+        "title": "AI Multi-Translate: Open Translation Sidebar",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.openTab",
+        "title": "AI Multi-Translate: Open Translation Tab (Web UI)",
+        "icon": "$(globe)",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.setApiKey",
+        "title": "AI Multi-Translate: Set API Key",
+        "category": "AI Multi-Translate"
+      },
+      {
+        "command": "vscode-translate.clearApiKey",
+        "title": "AI Multi-Translate: Clear API Key",
+        "category": "AI Multi-Translate"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "vscode-translate.openSettings",
+          "when": "view == vscodeTranslate.sidebarView",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "vscode-translate.openTab",
+          "group": "navigation@100"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "vscode-translate.translateSelection",
+          "when": "editorHasSelection",
+          "group": "translation@1"
+        },
+        {
+          "command": "vscode-translate.replaceSelection",
+          "when": "editorHasSelection",
+          "group": "translation@2"
+        },
+        {
+          "command": "vscode-translate.insertBelowSelection",
+          "when": "editorHasSelection",
+          "group": "translation@3"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "vscode-translate.translateSelection",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+alt+t",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "vscode-translate.replaceSelection",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorTextFocus && editorHasSelection"
+      }
+    ],
+    "configuration": {
+      "title": "AI Multi-Translate",
+      "properties": {
+        "vscodeTranslate.provider": {
+          "type": "string",
+          "default": "google-free",
+          "enum": [
+            "google-free",
+            "deepl",
+            "gemini"
+          ],
+          "enumDescriptions": [
+            "Google Translate (Free public endpoint, no API key needed)",
+            "DeepL API (Requires DeepL Auth Key)",
+            "Google Gemini AI (Requires Gemini API Key)"
+          ],
+          "description": "Selected translation provider engine."
+        },
+        "vscodeTranslate.panelLanguage": {
+          "type": "string",
+          "default": "en",
+          "enum": [
+            "en",
+            "ja",
+            "zh",
+            "ko",
+            "vi",
+            "de",
+            "es",
+            "fr",
+            "hi",
+            "it",
+            "pt",
+            "ru"
+          ],
+          "enumDescriptions": [
+            "English",
+            "日本語 (Japanese)",
+            "简体中文 (Simplified Chinese)",
+            "한국어 (Korean)",
+            "Tiếng Việt (Vietnamese)",
+            "Deutsch (German)",
+            "Español (Spanish)",
+            "Français (French)",
+            "हिन्दी (Hindi)",
+            "Italiano (Italian)",
+            "Português (Portuguese)",
+            "Русский (Russian)"
+          ],
+          "description": "UI language for the translation panel."
+        },
+        "vscodeTranslate.targetLanguage": {
+          "type": "string",
+          "default": "vi",
+          "description": "Default target language code (e.g. vi, ja, en, zh, ko, es, fr, de)."
+        },
+        "vscodeTranslate.sourceLanguage": {
+          "type": "string",
+          "default": "auto",
+          "description": "Default source language code ('auto' for automatic detection)."
+        },
+        "vscodeTranslate.hoverEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable automatic translation tooltip when hovering over selected text."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest --passWithNoTests",
+    "package:vsix": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.20.3",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.24.2",
+    "eslint": "^8.57.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.7",
+    "ts-jest": "^29.4.12",
+    "typescript": "^5.5.4"
+  }
+}
