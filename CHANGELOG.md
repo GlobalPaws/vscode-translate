@@ -2,6 +2,12 @@
 
 All notable changes to the "ai-multi-translate" extension will be documented in this file.
 
+## [0.1.4] - 2026-09-18
+
+### Changed
+- Enhanced API key persistence across extension updates with automatic dual-storage migration (SecretStorage + globalState fallback).
+- Streamlined settings button access in the panel title bar.
+
 ## [0.1.3] - 2026-09-18
 
 ### Changed
