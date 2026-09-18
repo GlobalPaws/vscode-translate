@@ -4,6 +4,9 @@ export interface TranslationHtmlOptions {
   defaultSource?: string;
   defaultTarget?: string;
   iconUri?: string;
+  googleIconUri?: string;
+  deeplIconUri?: string;
+  geminiIconUri?: string;
 }
 
 export interface LanguageItem {
@@ -273,7 +276,18 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       font-weight: 500;
     }
 
-    .provider-select {
+    .custom-provider-select {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      max-width: 280px;
+    }
+
+    .provider-current-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       background: var(--input-bg);
       color: var(--text-color);
       border: 1px solid var(--border-color);
@@ -282,9 +296,94 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       font-size: 12px;
       outline: none;
       cursor: pointer;
+      text-align: left;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    .provider-current-btn:hover,
+    .provider-current-btn:focus {
+      border-color: var(--primary-color);
+    }
+
+    .provider-btn-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .provider-btn-text {
       flex: 1;
-      min-width: 0;
-      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .provider-btn-arrow {
+      font-size: 10px;
+      color: var(--subtext-color);
+      flex-shrink: 0;
+      margin-left: 2px;
+    }
+
+    .provider-options-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 100%;
+      min-width: 200px;
+      background: var(--modal-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      z-index: 500;
+      overflow: hidden;
+    }
+
+    .provider-options-menu.active {
+      display: block;
+    }
+
+    .provider-option-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.12s;
+      user-select: none;
+    }
+
+    .provider-option-item:hover {
+      background: var(--btn-hover);
+    }
+
+    .provider-option-item.selected {
+      background: var(--active-tab-bg);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .provider-option-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .setting-section-header-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      object-fit: contain;
+      vertical-align: middle;
+      display: inline-block;
     }
 
     .btn-settings-gear {
@@ -736,14 +835,48 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           : '<div class="brand-logo">AI</div>'
       }
       <div class="provider-select-wrapper">
-        <label for="providerSelect" id="txtEngineLabel">Engine:</label>
-        <select id="providerSelect" class="provider-select">
-          <option value="google-free" ${currentProvider === 'google-free' ? 'selected' : ''}>Google (Free / Online)</option>
-          <option value="deepl" ${currentProvider === 'deepl' ? 'selected' : ''}>DeepL API</option>
-          <option value="gemini" ${currentProvider === 'gemini' ? 'selected' : ''}>Google Gemini AI</option>
-        </select>
+        <label id="txtEngineLabel">Engine:</label>
+        <div class="custom-provider-select" id="providerDropdownWrapper">
+          <button class="provider-current-btn" id="providerCurrentBtn" type="button" aria-haspopup="listbox">
+            <img id="providerCurrentIcon" class="provider-btn-icon" src="${
+              currentProvider === 'deepl'
+                ? (options.deeplIconUri || '')
+                : currentProvider === 'gemini'
+                ? (options.geminiIconUri || '')
+                : (options.googleIconUri || '')
+            }" alt="" />
+            <span class="provider-btn-text" id="providerCurrentLabel">${
+              currentProvider === 'deepl'
+                ? 'DeepL API'
+                : currentProvider === 'gemini'
+                ? 'Google Gemini AI'
+                : 'Google (Free / Online)'
+            }</span>
+            <span class="provider-btn-arrow">▾</span>
+          </button>
+          <div class="provider-options-menu" id="providerOptionsMenu" role="listbox">
+            <div class="provider-option-item ${currentProvider === 'google-free' ? 'selected' : ''}" data-value="google-free">
+              ${options.googleIconUri ? `<img src="${options.googleIconUri}" class="provider-option-icon" alt="" />` : ''}
+              <span>Google (Free / Online)</span>
+            </div>
+            <div class="provider-option-item ${currentProvider === 'deepl' ? 'selected' : ''}" data-value="deepl">
+              ${options.deeplIconUri ? `<img src="${options.deeplIconUri}" class="provider-option-icon" alt="" />` : ''}
+              <span>DeepL API</span>
+            </div>
+            <div class="provider-option-item ${currentProvider === 'gemini' ? 'selected' : ''}" data-value="gemini">
+              ${options.geminiIconUri ? `<img src="${options.geminiIconUri}" class="provider-option-icon" alt="" />` : ''}
+              <span>Google Gemini AI</span>
+            </div>
+          </div>
+          <select id="providerSelect" style="display: none;">
+            <option value="google-free" ${currentProvider === 'google-free' ? 'selected' : ''}>Google (Free / Online)</option>
+            <option value="deepl" ${currentProvider === 'deepl' ? 'selected' : ''}>DeepL API</option>
+            <option value="gemini" ${currentProvider === 'gemini' ? 'selected' : ''}>Google Gemini AI</option>
+          </select>
+        </div>
       </div>
     </div>
+    <button class="btn-settings-gear" id="btnOpenSettings" title="Settings" aria-label="Settings">⚙</button>
   </div>
 
   <!-- Translation Main Grid -->
@@ -853,7 +986,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
       <div class="setting-section">
         <div class="setting-label">
-          <span id="txtDefaultSourceLabel">📥 Default Source Language</span>
+          <span id="txtDefaultSourceLabel">🔤 Default Source Language</span>
         </div>
         <div class="input-row">
           <select id="defaultSourceSelect" class="setting-select">
@@ -865,7 +998,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
       <div class="setting-section">
         <div class="setting-label">
-          <span id="txtDefaultTargetLabel">📤 Default Target Language</span>
+          <span id="txtDefaultTargetLabel">🎯 Default Target Language</span>
         </div>
         <div class="input-row">
           <select id="defaultTargetSelect" class="setting-select">
@@ -877,7 +1010,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       <!-- DeepL Setting -->
       <div class="setting-section">
         <div class="setting-label">
-          <span>⚡ DeepL API Key</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            ${options.deeplIconUri ? `<img src="${options.deeplIconUri}" class="setting-section-header-icon" alt="" />` : '⚡'}
+            <span>DeepL API Key</span>
+          </span>
           <span class="status-badge" id="deeplBadge">Not Configured</span>
         </div>
         <div class="input-row">
@@ -891,7 +1027,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       <!-- Gemini Setting -->
       <div class="setting-section">
         <div class="setting-label">
-          <span>🤖 Google Gemini API Key</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            ${options.geminiIconUri ? `<img src="${options.geminiIconUri}" class="setting-section-header-icon" alt="" />` : '🤖'}
+            <span>Google Gemini API Key</span>
+          </span>
           <span class="status-badge" id="geminiBadge">Not Configured</span>
         </div>
         <div class="input-row">
@@ -919,11 +1058,12 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
   <script>
     const vscode = acquireVsCodeApi();
+    let currentPanelLang = '${panelLanguage}';
 
     // i18n Dictionaries
     const I18N = {
       en: {
-        brandTitle: "Google Translate (IDE Edition)",
+        brandTitle: "AI Multi-Translate Panel",
         engineLabel: "Engine:",
         btnSettings: "Settings",
         chipAuto: "Detect Language",
@@ -940,7 +1080,9 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Settings & Configuration",
         panelLanguageLabel: "🌐 Panel UI Language",
         panelLanguageHint: "Changes the display language of this translation interface.",
-            deeplHint: "Free plan available (500,000 chars/month). Get your key at deepl.com/pro-api (ends with :fx).",
+        defaultSourceLabel: "🔤 Default Source Language",
+        defaultTargetLabel: "🎯 Default Target Language",
+        deeplHint: "Free plan available (500,000 chars/month). Get your key at deepl.com/pro-api (ends with :fx).",
         geminiHint: "Free quota available via Google AI Studio. Get your API key at aistudio.google.com.",
         hoverLabel: "💡 Editor Hover Translation Tooltip",
         hoverHint: "Automatically display a translation preview tooltip when hovering over selected code.",
@@ -968,8 +1110,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ 設定 & 翻訳構成",
         panelLanguageLabel: "🌐 パネル表示言語",
         panelLanguageHint: "この翻訳パネル自体の表示言語（UI言語）を切り替えます。",
-        defaultSourceLabel: "📥 デフォルト翻訳元言語 (Source)",
-        defaultTargetLabel: "📤 デフォルト翻訳先言語 (Target)",
+        defaultSourceLabel: "🔤 デフォルト翻訳元言語 (Source)",
+        defaultTargetLabel: "🎯 デフォルト翻訳先言語 (Target)",
         deeplHint: "無料プランあり（毎月50万文字まで完全無料）。deepl.com/pro-api のアカウント設定から取得（末尾 :fx）。",
         geminiHint: "Google AI Studio で無料利用可能。aistudio.google.com で「Get API key」よりワンクリックで作成。",
         hoverLabel: "💡 エディタホバー翻訳ツールチップ",
@@ -998,8 +1140,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ 设置与配置",
         panelLanguageLabel: "🌐 面板界面语言",
         panelLanguageHint: "更改此翻译面板界面的显示语言。",
-        defaultSourceLabel: "📥 默认源语言",
-        defaultTargetLabel: "📤 默认目标语言",
+        defaultSourceLabel: "🔤 默认源语言",
+        defaultTargetLabel: "🎯 默认目标语言",
         deeplHint: "提供免费计划（每月50万字符免费）。在 deepl.com/pro-api 账户设置中获取密钥（以:fx结尾）。",
         geminiHint: "Google AI Studio 提供免费使用配额。在 aistudio.google.com 点击 Get API key 即可创建。",
         hoverLabel: "💡 编辑器悬停翻译提示",
@@ -1028,8 +1170,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ 설정 및 환경 구성",
         panelLanguageLabel: "🌐 패널 UI 언어",
         panelLanguageHint: "이 번역 패널 인터페이스의 표시 언어를 변경합니다.",
-        defaultSourceLabel: "📥 기본 소스 언어",
-        defaultTargetLabel: "📤 기본 타겟 언어",
+        defaultSourceLabel: "🔤 기본 소스 언어",
+        defaultTargetLabel: "🎯 기본 타겟 언어",
         deeplHint: "무료 요금제 제공 (월 50만 자 무료). deepl.com/pro-api 계정 설정에서 키를 발급받으세요 (:fx로 끝남).",
         geminiHint: "Google AI Studio를 통해 무료 이용 가능. aistudio.google.com에서 Get API key로 간편하게 생성.",
         hoverLabel: "💡 에디터 호버 번역 툴팁",
@@ -1058,8 +1200,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Cài đặt & Cấu hình",
         panelLanguageLabel: "🌐 Ngôn ngữ giao diện Panel",
         panelLanguageHint: "Thay đổi ngôn ngữ hiển thị của giao diện dịch thuật này.",
-        defaultSourceLabel: "📥 Ngôn ngữ nguồn mặc định",
-        defaultTargetLabel: "📤 Ngôn ngữ đích mặc định",
+        defaultSourceLabel: "🔤 Ngôn ngữ nguồn mặc định",
+        defaultTargetLabel: "🎯 Ngôn ngữ đích mặc định",
         deeplHint: "Có gói miễn phí (500.000 ký tự/tháng). Lấy khóa tại deepl.com/pro-api (kết thúc bằng :fx).",
         geminiHint: "Miễn phí qua Google AI Studio. Lấy khóa API tại aistudio.google.com qua nút Get API key.",
         hoverLabel: "💡 Tooltip dịch khi di chuột trong Editor",
@@ -1088,8 +1230,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Einstellungen & Konfiguration",
         panelLanguageLabel: "🌐 Panel-UI-Sprache",
         panelLanguageHint: "Ändert die Anzeigesprache dieser Übersetzungsoberfläche.",
-        defaultSourceLabel: "📥 Standard-Ausgangssprache",
-        defaultTargetLabel: "📤 Standard-Zielsprache",
+        defaultSourceLabel: "🔤 Standard-Ausgangssprache",
+        defaultTargetLabel: "🎯 Standard-Zielsprache",
         deeplHint: "Kostenloser Plan verfügbar (500.000 Zeichen/Monat frei). Schlüssel unter deepl.com/pro-api abrufen (endet auf :fx).",
         geminiHint: "Kostenlose Nutzung über Google AI Studio möglich. API-Schlüssel unter aistudio.google.com erstellen.",
         hoverLabel: "💡 Editor-Hover-Übersetzungs-Tooltip",
@@ -1118,8 +1260,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Ajustes y Configuración",
         panelLanguageLabel: "🌐 Idioma de la interfaz",
         panelLanguageHint: "Cambia el idioma de visualización de este panel de traducción.",
-        defaultSourceLabel: "📥 Idioma de origen predeterminado",
-        defaultTargetLabel: "📤 Idioma de destino predeterminado",
+        defaultSourceLabel: "🔤 Idioma de origen predeterminado",
+        defaultTargetLabel: "🎯 Idioma de destino predeterminado",
         deeplHint: "Plan gratuito disponible (500.000 caracteres/mes gratis). Obtén tu clave en deepl.com/pro-api (termina en :fx).",
         geminiHint: "Cuota gratuita disponible en Google AI Studio. Obtén tu clave en aistudio.google.com.",
         hoverLabel: "💡 Información sobre herramientas al pasar el cursor",
@@ -1148,8 +1290,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Paramètres et Configuration",
         panelLanguageLabel: "🌐 Langue de l'interface",
         panelLanguageHint: "Modifie la langue d'affichage de ce panneau de traduction.",
-        defaultSourceLabel: "📥 Langue source par défaut",
-        defaultTargetLabel: "📤 Langue cible par défaut",
+        defaultSourceLabel: "🔤 Langue source par défaut",
+        defaultTargetLabel: "🎯 Langue cible par défaut",
         deeplHint: "Forfait gratuit disponible (500 000 caractères/mois gratuits). Obtenez votre clé sur deepl.com/pro-api (finit par :fx).",
         geminiHint: "Quota gratuit disponible via Google AI Studio. Obtenez votre clé sur aistudio.google.com.",
         hoverLabel: "💡 Infobulle de traduction au survol",
@@ -1178,8 +1320,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ सेटिंग्स और कॉन्फ़िगरेशन",
         panelLanguageLabel: "🌐 पैनल UI भाषा",
         panelLanguageHint: "इस अनुवाद इंटरफ़ेस की प्रदर्शन भाषा बदलें।",
-        defaultSourceLabel: "📥 डिफ़ॉल्ट स्रोत भाषा",
-        defaultTargetLabel: "📤 डिफ़ॉल्ट लक्ष्य भाषा",
+        defaultSourceLabel: "🔤 डिफ़ॉल्ट स्रोत भाषा",
+        defaultTargetLabel: "🎯 डिफ़ॉल्ट लक्ष्य भाषा",
         deeplHint: "मुफ़्त योजना उपलब्ध (500,000 वर्ण/माह मुफ़्त)। deepl.com/pro-api पर अपनी कुंजी प्राप्त करें (:fx पर समाप्त)।",
         geminiHint: "Google AI Studio के माध्यम से मुफ़्त कोटा उपलब्ध। aistudio.google.com पर Get API key से बनाएं।",
         hoverLabel: "💡 संपादक होवर अनुवाद टूलटिप",
@@ -1208,8 +1350,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Impostazioni e Configurazione",
         panelLanguageLabel: "🌐 Lingua dell'interfaccia",
         panelLanguageHint: "Modifica la lingua di visualizzazione di questo pannello di traduzione.",
-        defaultSourceLabel: "📥 Lingua di origine predefinita",
-        defaultTargetLabel: "📤 Lingua di destinazione predefinita",
+        defaultSourceLabel: "🔤 Lingua di origine predefinita",
+        defaultTargetLabel: "🎯 Lingua di destinazione predefinita",
         deeplHint: "Piano gratuito disponibile (500.000 caratteri/mese gratis). Ottieni la chiave su deepl.com/pro-api (termina con :fx).",
         geminiHint: "Quota gratuita disponibile tramite Google AI Studio. Ottieni la chiave su aistudio.google.com.",
         hoverLabel: "💡 Tooltip di traduzione al passaggio del mouse",
@@ -1238,8 +1380,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Configurações & Preferências",
         panelLanguageLabel: "🌐 Idioma da interface",
         panelLanguageHint: "Altera o idioma de exibição deste painel de tradução.",
-        defaultSourceLabel: "📥 Idioma de origem padrão",
-        defaultTargetLabel: "📤 Idioma de destino padrão",
+        defaultSourceLabel: "🔤 Idioma de origem padrão",
+        defaultTargetLabel: "🎯 Idioma de destino padrão",
         deeplHint: "Plano gratuito disponível (500.000 caracteres/mês grátis). Obtenha sua chave em deepl.com/pro-api (termina com :fx).",
         geminiHint: "Cota gratuita disponível no Google AI Studio. Obtenha sua chave em aistudio.google.com.",
         hoverLabel: "💡 Dica de tradução ao passar o cursor",
@@ -1268,8 +1410,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         modalTitle: "⚙️ Настройки и конфигурация",
         panelLanguageLabel: "🌐 Язык интерфейса панели",
         panelLanguageHint: "Изменяет язык интерфейса этой панели перевода.",
-        defaultSourceLabel: "📥 Исходный язык по умолчанию",
-        defaultTargetLabel: "📤 Целевой язык по умолчанию",
+        defaultSourceLabel: "🔤 Исходный язык по умолчанию",
+        defaultTargetLabel: "🎯 Целевой язык по умолчанию",
         deeplHint: "Доступен бесплатный план (500 000 симв./мес. бесплатно). Получите ключ на deepl.com/pro-api (оканчивается на :fx).",
         geminiHint: "Бесплатный лимит в Google AI Studio. Создайте ключ на aistudio.google.com нажав Get API key.",
         hoverLabel: "💡 Всплывающая подсказка перевода при наведении",
@@ -1698,7 +1840,70 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
     });
 
+    const providerDropdownWrapper = document.getElementById('providerDropdownWrapper');
+    const providerCurrentBtn = document.getElementById('providerCurrentBtn');
+    const providerOptionsMenu = document.getElementById('providerOptionsMenu');
+    const providerCurrentIcon = document.getElementById('providerCurrentIcon');
+    const providerCurrentLabel = document.getElementById('providerCurrentLabel');
+    const providerOptionItems = document.querySelectorAll('.provider-option-item');
+
+    const providerIcons = {
+      'google-free': '${options.googleIconUri || ''}',
+      'deepl': '${options.deeplIconUri || ''}',
+      'gemini': '${options.geminiIconUri || ''}'
+    };
+
+    const providerLabels = {
+      'google-free': 'Google (Free / Online)',
+      'deepl': 'DeepL API',
+      'gemini': 'Google Gemini AI'
+    };
+
+    function updateCustomProviderUi(value) {
+      if (providerCurrentIcon && providerIcons[value]) {
+        providerCurrentIcon.src = providerIcons[value];
+      }
+      if (providerCurrentLabel && providerLabels[value]) {
+        providerCurrentLabel.textContent = providerLabels[value];
+      }
+      providerOptionItems.forEach(item => {
+        if (item.getAttribute('data-value') === value) {
+          item.classList.add('selected');
+        } else {
+          item.classList.remove('selected');
+        }
+      });
+    }
+
+    if (providerCurrentBtn && providerOptionsMenu) {
+      providerCurrentBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        providerOptionsMenu.classList.toggle('active');
+      });
+
+      providerOptionItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const val = item.getAttribute('data-value');
+          if (val) {
+            providerSelect.value = val;
+            updateCustomProviderUi(val);
+            providerOptionsMenu.classList.remove('active');
+            vscode.postMessage({ command: 'updateConfig', key: 'provider', value: val });
+            triggerTranslation(true);
+          }
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (providerDropdownWrapper && !providerDropdownWrapper.contains(e.target)) {
+          providerOptionsMenu.classList.remove('active');
+        }
+      });
+    }
+
     providerSelect.addEventListener('change', () => {
+      updateCustomProviderUi(providerSelect.value);
       vscode.postMessage({ command: 'updateConfig', key: 'provider', value: providerSelect.value });
       triggerTranslation(true);
     });
@@ -1743,6 +1948,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
         if (msg.provider) {
           providerSelect.value = msg.provider;
+          updateCustomProviderUi(msg.provider);
         }
 
         if (msg.panelLanguage) {

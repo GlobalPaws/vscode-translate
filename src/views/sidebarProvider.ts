@@ -35,6 +35,15 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
     const iconUri = webviewView.webview
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'icon.png'))
       .toString();
+    const googleIconUri = webviewView.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'google_translate_icon.png'))
+      .toString();
+    const deeplIconUri = webviewView.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'deepl_icon.webp'))
+      .toString();
+    const geminiIconUri = webviewView.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'google-gemini-icon.webp'))
+      .toString();
 
     webviewView.webview.html = getTranslationHtml({
       currentProvider: provider,
@@ -42,6 +51,9 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       defaultSource: source,
       defaultTarget: target,
       iconUri: iconUri,
+      googleIconUri: googleIconUri,
+      deeplIconUri: deeplIconUri,
+      geminiIconUri: geminiIconUri,
     });
 
     webviewView.webview.onDidReceiveMessage(
@@ -157,7 +169,7 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
     const hasDeepl = !!(await this.secretService.getApiKey('deepl'));
     const hasGemini = !!(await this.secretService.getApiKey('gemini'));
-    const hoverEnabled = config.get<boolean>('hoverEnabled', false);
+    const hoverEnabled = config.get<boolean>('hoverEnabled', true);
     const panelLanguage = config.get<string>('panelLanguage', 'en');
     const sourceLanguage = config.get<string>('sourceLanguage', 'auto');
     const targetLanguage = config.get<string>('targetLanguage', 'vi');

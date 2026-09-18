@@ -12,7 +12,7 @@ export class TranslationHoverProvider implements vscode.HoverProvider {
     token: vscode.CancellationToken
   ): Promise<vscode.Hover | undefined> {
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
-    const hoverEnabled = config.get<boolean>('hoverEnabled', false);
+    const hoverEnabled = config.get<boolean>('hoverEnabled', true);
     if (!hoverEnabled) {
       return undefined;
     }

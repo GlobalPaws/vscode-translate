@@ -2,7 +2,7 @@
   "name": "ai-multi-translate",
   "displayName": "AI Multi-Translate",
   "description": "Fast and intelligent in-editor translation powered by Google Translate, DeepL, and Gemini.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "GlobalPaws",
   "author": {
     "name": "GlobalPaws"
@@ -208,7 +208,7 @@
         },
         "vscodeTranslate.hoverEnabled": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Enable automatic translation tooltip when hovering over selected text."
         }
       }

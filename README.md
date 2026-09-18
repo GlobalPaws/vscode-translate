@@ -1,11 +1,11 @@
 # AI Multi-Translate for VS Code
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/GlobalPaws/vscode-translate/main/media/icon.png" alt="AI Multi-Translate Icon" width="128" height="128" />
+  <img src="./media/icon.png" alt="AI Multi-Translate Icon" width="128" height="128" />
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/"><img src="https://img.shields.io/badge/marketplace-v0.1.2-blue.svg" alt="Marketplace" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=GlobalPaws.ai-multi-translate"><img src="https://img.shields.io/badge/marketplace-v0.1.3-blue.svg" alt="Marketplace" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" /></a>
 </p>
 
@@ -35,15 +35,15 @@ Supports **Google Translate (Free, no configuration needed)**, **DeepL API**, an
 ### ✨ Features
 - **Instant Out-of-the-box Translation**: Zero configuration needed. Default free engine works immediately!
 - **Multi-Engine Support**:
-  - 🌐 **Free Online Translation** (Google Translate & fallback)
-  - ⚡ **DeepL API** (Free & Pro tier auth keys)
-  - 🤖 **Google Gemini AI** (Context-aware, developer-optimized translation)
+  - <img src="./media/google_translate_icon.png" width="16" height="16" valign="middle" /> **Free Online Translation** (Google Translate & fallback)
+  - <img src="./media/deepl_icon.webp" width="16" height="16" valign="middle" /> **DeepL API** (Free & Pro tier auth keys)
+  - <img src="./media/google-gemini-icon.webp" width="16" height="16" valign="middle" /> **Google Gemini AI** (Context-aware, developer-optimized translation)
 - **Inline Operations**:
   - **Quick Action Popup**: Translate selection, then choose to replace, insert below, or copy.
   - **Direct Replace**: Replace highlighted text with translation in one click or shortcut (`Cmd+Alt+R` / `Ctrl+Alt+R`).
   - **Insert Below**: Append translation right underneath your code/comment.
 - **Full Sidebar Panel**: A dedicated Webview panel with real-time translation, speech synthesis, language swapping, and multi-language UI.
-- **Editor Hover Tooltip**: (Optional) View instant translations in tooltips when hovering over selected code.
+- **Editor Hover Tooltip**: (Enabled by default) View instant translations in tooltips when hovering over selected code.
 - **Secure Key Storage**: API keys are securely encrypted using VS Code's native `SecretStorage`.
 
 ### ⌨️ Keyboard Shortcuts
@@ -58,9 +58,9 @@ Supports **Google Translate (Free, no configuration needed)**, **DeepL API**, an
 
 | Provider | Free Tier Available? | How to Get Your API Key |
 |---|---|---|
-| 🌐 **Google Translate** | **100% Free** (No key needed) | Default engine. Zero setup required — works out of the box! |
-| ⚡ **DeepL API** | **Free tier available**<br>(500,000 chars/month free) | 1. Sign up at [DeepL API Free](https://www.deepl.com/pro-api).<br>2. Navigate to **Account Settings** and copy your **Authentication Key** (ends with `:fx`).<br>3. Run `Translate: Set API Key` in VS Code or click ⚙️ in the sidebar panel. |
-| 🤖 **Google Gemini AI** | **Free tier available**<br>(Free quota in AI Studio) | 1. Sign in to [Google AI Studio](https://aistudio.google.com/) with your Google account.<br>2. Click **Get API key** -> **Create API key**.<br>3. Run `Translate: Set API Key` in VS Code or paste into the sidebar settings. |
+| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google Translate** | **100% Free** (No key needed) | Default engine. Zero setup required — works out of the box! |
+| <img src="./media/deepl_icon.webp" width="18" height="18" valign="middle" /> **DeepL API** | **Free tier available**<br>(500,000 chars/month free) | 1. Sign up at [DeepL API Free](https://www.deepl.com/pro-api).<br>2. Navigate to **Account Settings** and copy your **Authentication Key** (ends with `:fx`).<br>3. Run `Translate: Set API Key` in VS Code or click ⚙️ in the sidebar panel. |
+| <img src="./media/google-gemini-icon.webp" width="18" height="18" valign="middle" /> **Google Gemini AI** | **Free tier available**<br>(Free quota in AI Studio) | 1. Sign in to [Google AI Studio](https://aistudio.google.com/) with your Google account.<br>2. Click **Get API key** -> **Create API key**.<br>3. Run `Translate: Set API Key` in VS Code or paste into the sidebar settings. |
 
 ---
 
@@ -73,24 +73,24 @@ Supports **Google Translate (Free, no configuration needed)**, **DeepL API**, an
 ### ✨ 主な機能
 - **初期設定ゼロですぐに使える**: インストール直後から無料翻訳エンジンで即座に動作。
 - **3つの翻訳エンジンに対応**:
-  - 🌐 **無料オンライン翻訳**（Google 翻訳 & フォールバック）
-  - ⚡ **DeepL API**（無料版およびPro版の認証キーに対応）
-  - 🤖 **Google Gemini AI**（コードの文脈を考慮した高精度な翻訳）
+  - <img src="./media/google_translate_icon.png" width="16" height="16" valign="middle" /> **無料オンライン翻訳**（Google 翻訳 & フォールバック）
+  - <img src="./media/deepl_icon.webp" width="16" height="16" valign="middle" /> **DeepL API**（無料版およびPro版の認証キーに対応）
+  - <img src="./media/google-gemini-icon.webp" width="16" height="16" valign="middle" /> **Google Gemini AI**（コードの文脈を考慮した高精度な翻訳）
 - **便利なインライン操作**:
   - **ポップアップ翻訳**: 選択範囲を翻訳し、「置換」「下に挿入」「コピー」を選択可能 (`Cmd+Alt+T` / `Ctrl+Alt+T`)。
   - **ワンキー置換**: 選択中のテキストを翻訳テキストに直接置き換え (`Cmd+Alt+R` / `Ctrl+Alt+R`)。
   - **行下に挿入**: 翻訳結果を原文の直下へコメントとして追記。
 - **多機能サイドバーパネル**: 音声読み上げ、言語反転、リアルタイム翻訳、UI言語切り替えに対応した専用Webviewパネル。
-- **ホバー翻訳**: 選択したテキストにカーソルを合わせるだけで翻訳ツールチップを表示。
+- **ホバー翻訳**: デフォルトで有効。選択したテキストにカーソルを合わせるだけで翻訳ツールチップを表示。
 - **安全なAPIキー管理**: VS Code標準の `SecretStorage`（OSキーチェーン）によりAPIキーを安全に暗号化保存。
 
 ### 🔑 無料枠とAPIキーの発行・設定方法
 
 | プロバイダー | 無料プラン / 無料枠 | APIキーの取得と設定手順 |
 |---|---|---|
-| 🌐 **Google 翻訳** | **完全無料**（キー不要） | デフォルトエンジン。設定不要でインストール直後から利用可能！ |
-| ⚡ **DeepL API** | **無料プランあり**<br>（月500,000文字まで無料） | 1. [DeepL API 無料登録ページ](https://www.deepl.com/ja/pro-api) で無料アカウントを作成。<br>2. アカウント設定画面から **認証キー**（末尾が `:fx`）をコピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
-| 🤖 **Google Gemini AI** | **無料枠あり**<br>（AI Studioで無料利用可能） | 1. [Google AI Studio](https://aistudio.google.com/) にGoogleアカウントでログイン。<br>2. **「Get API key」** -> **「Create API key」** でキーを作成・コピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
+| <img src="./media/google_translate_icon.png" width="18" height="18" valign="middle" /> **Google 翻訳** | **完全無料**（キー不要） | デフォルトエンジン。設定不要でインストール直後から利用可能！ |
+| <img src="./media/deepl_icon.webp" width="18" height="18" valign="middle" /> **DeepL API** | **無料プランあり**<br>（月500,000文字まで無料） | 1. [DeepL API 無料登録ページ](https://www.deepl.com/ja/pro-api) で無料アカウントを作成。<br>2. アカウント設定画面から **認証キー**（末尾が `:fx`）をコピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
+| <img src="./media/google-gemini-icon.webp" width="18" height="18" valign="middle" /> **Google Gemini AI** | **無料枠あり**<br>（AI Studioで無料利用可能） | 1. [Google AI Studio](https://aistudio.google.com/) にGoogleアカウントでログイン。<br>2. **「Get API key」** -> **「Create API key」** でキーを作成・コピー。<br>3. VS Codeで `Translate: Set API Key` を実行するか、サイドバーの ⚙️ 設定から登録。 |
 
 ---
 
@@ -147,15 +147,15 @@ Hỗ trợ **Google Dịch (Miễn phí, không cần cài đặt)**, **DeepL AP
 ### ✨ Tính năng nổi bật
 - **Sử dụng ngay tức thì**: Không cần cấu hình phức tạp, công cụ miễn phí mặc định hoạt động ngay lập tức!
 - **Hỗ trợ đa công cụ dịch**:
-  - 🌐 **Dịch trực tuyến miễn phí** (Google Dịch & hệ thống dự phòng)
-  - ⚡ **DeepL API** (Hỗ trợ khóa xác thực Free & Pro)
-  - 🤖 **Google Gemini AI** (Dịch thuật thông minh, hiểu ngữ cảnh lập trình)
+  - <img src="./media/google_translate_icon.png" width="16" height="16" valign="middle" /> **Dịch trực tuyến miễn phí** (Google Dịch & hệ thống dự phòng)
+  - <img src="./media/deepl_icon.webp" width="16" height="16" valign="middle" /> **DeepL API** (Hỗ trợ khóa xác thực Free & Pro)
+  - <img src="./media/google-gemini-icon.webp" width="16" height="16" valign="middle" /> **Google Gemini AI** (Dịch thuật thông minh, hiểu ngữ cảnh lập trình)
 - **Thao tác nội dòng tiện lợi**:
   - **Menu thao tác nhanh**: Dịch vùng chọn, sau đó chọn thay thế, chèn xuống dưới hoặc sao chép (`Cmd+Alt+T` / `Ctrl+Alt+T`).
   - **Thay thế trực tiếp**: Thay thế văn bản đã chọn bằng bản dịch chỉ với một phím tắt (`Cmd+Alt+R` / `Ctrl+Alt+R`).
   - **Chèn xuống dòng dưới**: Thêm bản dịch ngay bên dưới vùng văn bản đã chọn.
 - **Bảng điều khiển thanh bên**: Giao diện Webview chuyên dụng hỗ trợ dịch theo thời gian thực, đọc phát âm, đảo ngược ngôn ngữ và tùy chỉnh ngôn ngữ giao diện.
-- **Xem trước khi di chuột**: Hiển thị tooltip bản dịch ngay khi rê chuột qua đoạn mã được chọn.
+- **Xem trước khi di chuột**: (Mặc định bật) Hiển thị tooltip bản dịch ngay khi rê chuột qua đoạn mã được chọn.
 - **Bảo mật khóa API**: Khóa API được mã hóa an toàn qua `SecretStorage` gốc của VS Code.
 
 ---

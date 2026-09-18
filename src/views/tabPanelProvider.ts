@@ -68,6 +68,15 @@ export class TranslationTabPanel {
     const iconUri = this._panel.webview
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'icon.png'))
       .toString();
+    const googleIconUri = this._panel.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'google_translate_icon.png'))
+      .toString();
+    const deeplIconUri = this._panel.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'deepl_icon.webp'))
+      .toString();
+    const geminiIconUri = this._panel.webview
+      .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'google-gemini-icon.webp'))
+      .toString();
 
     this._panel.webview.html = getTranslationHtml({
       currentProvider: provider,
@@ -75,6 +84,9 @@ export class TranslationTabPanel {
       defaultSource: source,
       defaultTarget: target,
       iconUri: iconUri,
+      googleIconUri: googleIconUri,
+      deeplIconUri: deeplIconUri,
+      geminiIconUri: geminiIconUri,
     });
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -207,7 +219,7 @@ export class TranslationTabPanel {
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
     const hasDeepl = !!(await this.secretService.getApiKey('deepl'));
     const hasGemini = !!(await this.secretService.getApiKey('gemini'));
-    const hoverEnabled = config.get<boolean>('hoverEnabled', false);
+    const hoverEnabled = config.get<boolean>('hoverEnabled', true);
     const panelLanguage = config.get<string>('panelLanguage', 'en');
     const sourceLanguage = config.get<string>('sourceLanguage', 'auto');
     const targetLanguage = config.get<string>('targetLanguage', 'vi');
