@@ -14,6 +14,7 @@ export class TranslationTabPanel {
     extensionUri: vscode.Uri,
     translatorFactory: TranslatorFactory,
     secretService: SecretService,
+    globalState: vscode.Memento,
     initialText?: string
   ): void {
     const column = vscode.window.activeTextEditor
@@ -46,6 +47,7 @@ export class TranslationTabPanel {
       extensionUri,
       translatorFactory,
       secretService,
+      globalState,
       initialText
     );
   }
@@ -55,6 +57,7 @@ export class TranslationTabPanel {
     private readonly extensionUri: vscode.Uri,
     private readonly translatorFactory: TranslatorFactory,
     private readonly secretService: SecretService,
+    private readonly globalState: vscode.Memento,
     initialText?: string
   ) {
     this._panel = panel;
@@ -62,8 +65,22 @@ export class TranslationTabPanel {
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
     const provider = config.get<string>('provider', 'google-free');
     const panelLanguage = config.get<string>('panelLanguage', 'en');
-    const target = config.get<string>('targetLanguage', 'vi');
-    const source = config.get<string>('sourceLanguage', 'auto');
+    const target =
+      this.globalState.get<string>('vscodeTranslate.targetLang') ??
+      config.get<string>('targetLanguage', 'vi');
+    const source =
+      this.globalState.get<string>('vscodeTranslate.sourceLang') ??
+      config.get<string>('sourceLanguage', 'auto');
+    const sourceTabs = this.globalState.get<string[]>('vscodeTranslate.sourceTabs') ?? [
+      'en',
+      'ja',
+      'vi',
+    ];
+    const targetTabs = this.globalState.get<string[]>('vscodeTranslate.targetTabs') ?? [
+      'vi',
+      'en',
+      'ja',
+    ];
 
     const iconUri = this._panel.webview
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'icon.png'))
@@ -83,6 +100,8 @@ export class TranslationTabPanel {
       panelLanguage: panelLanguage,
       defaultSource: source,
       defaultTarget: target,
+      sourceTabs: sourceTabs,
+      targetTabs: targetTabs,
       iconUri: iconUri,
       googleIconUri: googleIconUri,
       deeplIconUri: deeplIconUri,
@@ -101,6 +120,11 @@ export class TranslationTabPanel {
         key?: string;
         value?: unknown;
         enabled?: boolean;
+        requestId?: number;
+        targetLang?: string;
+        sourceLang?: string;
+        sourceTabs?: string[];
+        targetTabs?: string[];
       }) => {
         switch (data.command) {
           case 'getSettings': {
@@ -108,14 +132,27 @@ export class TranslationTabPanel {
             break;
           }
 
+          case 'updateLanguageState':
+          case 'saveLanguageState': {
+            if (data.sourceLang) {
+              await this.globalState.update('vscodeTranslate.sourceLang', data.sourceLang);
+            }
+            if (data.targetLang) {
+              await this.globalState.update('vscodeTranslate.targetLang', data.targetLang);
+            }
+            if (data.sourceTabs && Array.isArray(data.sourceTabs)) {
+              await this.globalState.update('vscodeTranslate.sourceTabs', data.sourceTabs);
+            }
+            if (data.targetTabs && Array.isArray(data.targetTabs)) {
+              await this.globalState.update('vscodeTranslate.targetTabs', data.targetTabs);
+            }
+            break;
+          }
+
           case 'updateConfig': {
             if (data.key) {
               const currentConf = vscode.workspace.getConfiguration('vscodeTranslate');
-              await currentConf.update(
-                data.key,
-                data.value,
-                vscode.ConfigurationTarget.Global
-              );
+              await currentConf.update(data.key, data.value, vscode.ConfigurationTarget.Global);
             }
             break;
           }
@@ -141,17 +178,14 @@ export class TranslationTabPanel {
           }
 
           case 'translate': {
-            if (data.provider) {
-              const currentConf = vscode.workspace.getConfiguration('vscodeTranslate');
-              await currentConf.update(
-                'provider',
-                data.provider,
-                vscode.ConfigurationTarget.Global
-              );
-            }
-
             if (!data.text || !data.text.trim()) {
-              this._panel.webview.postMessage({ command: 'result', text: '' });
+              this._panel.webview.postMessage({
+                command: 'result',
+                type: 'result',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
+                text: '',
+              });
               return;
             }
 
@@ -164,13 +198,22 @@ export class TranslationTabPanel {
 
               this._panel.webview.postMessage({
                 command: 'result',
+                type: 'result',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
                 text: result.text,
                 provider: result.provider,
                 detectedSourceLanguage: result.detectedSourceLanguage,
               });
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : String(error);
-              this._panel.webview.postMessage({ command: 'error', message });
+              this._panel.webview.postMessage({
+                command: 'error',
+                type: 'error',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
+                message,
+              });
             }
             break;
           }
@@ -221,8 +264,22 @@ export class TranslationTabPanel {
     const hasGemini = !!(await this.secretService.getApiKey('gemini'));
     const hoverEnabled = config.get<boolean>('hoverEnabled', true);
     const panelLanguage = config.get<string>('panelLanguage', 'en');
-    const sourceLanguage = config.get<string>('sourceLanguage', 'auto');
-    const targetLanguage = config.get<string>('targetLanguage', 'vi');
+    const sourceLanguage =
+      this.globalState.get<string>('vscodeTranslate.sourceLang') ??
+      config.get<string>('sourceLanguage', 'auto');
+    const targetLanguage =
+      this.globalState.get<string>('vscodeTranslate.targetLang') ??
+      config.get<string>('targetLanguage', 'vi');
+    const sourceTabs = this.globalState.get<string[]>('vscodeTranslate.sourceTabs') ?? [
+      'en',
+      'ja',
+      'vi',
+    ];
+    const targetTabs = this.globalState.get<string[]>('vscodeTranslate.targetTabs') ?? [
+      'vi',
+      'en',
+      'ja',
+    ];
     const provider = config.get<string>('provider', 'google-free');
 
     this._panel.webview.postMessage({
@@ -233,6 +290,8 @@ export class TranslationTabPanel {
       panelLanguage,
       sourceLanguage,
       targetLanguage,
+      sourceTabs,
+      targetTabs,
       provider,
     });
   }

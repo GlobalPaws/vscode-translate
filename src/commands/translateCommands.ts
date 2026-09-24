@@ -179,7 +179,9 @@ export class TranslateCommands {
 
     if (key !== undefined && key.trim().length > 0) {
       await this.secretService.setApiKey(providerItem.id, key);
-      vscode.window.showInformationMessage(`API Key for ${providerItem.label} has been saved securely.`);
+      vscode.window.showInformationMessage(
+        `API Key for ${providerItem.label} has been saved securely.`
+      );
     }
   }
 

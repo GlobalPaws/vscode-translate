@@ -74,8 +74,7 @@ export class GeminiTranslator implements ITranslator {
       }
     }
 
-    const sourceLangNote =
-      options.from && options.from !== 'auto' ? `from ${options.from} ` : '';
+    const sourceLangNote = options.from && options.from !== 'auto' ? `from ${options.from} ` : '';
     const systemPrompt =
       'You are a professional translator specializing in software development, technical documentation, and code comments. ' +
       `Translate the provided text ${sourceLangNote}into target language "${options.to}". ` +
@@ -123,7 +122,9 @@ export class GeminiTranslator implements ITranslator {
 
           if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Gemini API error (${response.status}): ${errorText || response.statusText}`);
+            throw new Error(
+              `Gemini API error (${response.status}): ${errorText || response.statusText}`
+            );
           }
 
           const data = (await response.json()) as GeminiResponse;

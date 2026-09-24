@@ -45,16 +45,14 @@ export function activate(context: vscode.ExtensionContext): void {
         context.extensionUri,
         translatorFactory,
         secretService,
+        context.globalState,
         initialText
       );
     })
   );
 
   // Status Bar Item: Click to open Google Translate Tab
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    100
-  );
+  const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBarItem.command = 'vscode-translate.openTab';
   statusBarItem.text = '$(globe) 翻訳';
   statusBarItem.tooltip = 'Google 翻訳タブをエディタで開く';
@@ -71,7 +69,8 @@ export function activate(context: vscode.ExtensionContext): void {
   const sidebarProvider = new SidebarTranslationViewProvider(
     context.extensionUri,
     translatorFactory,
-    secretService
+    secretService,
+    context.globalState
   );
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(

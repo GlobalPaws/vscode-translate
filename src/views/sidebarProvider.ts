@@ -11,7 +11,8 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
   constructor(
     private readonly extensionUri: vscode.Uri,
     private readonly translatorFactory: TranslatorFactory,
-    private readonly secretService: SecretService
+    private readonly secretService: SecretService,
+    private readonly globalState: vscode.Memento
   ) {}
 
   public resolveWebviewView(
@@ -29,8 +30,22 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
     const provider = config.get<string>('provider', 'google-free');
     const panelLanguage = config.get<string>('panelLanguage', 'en');
-    const target = config.get<string>('targetLanguage', 'vi');
-    const source = config.get<string>('sourceLanguage', 'auto');
+    const target =
+      this.globalState.get<string>('vscodeTranslate.targetLang') ??
+      config.get<string>('targetLanguage', 'vi');
+    const source =
+      this.globalState.get<string>('vscodeTranslate.sourceLang') ??
+      config.get<string>('sourceLanguage', 'auto');
+    const sourceTabs = this.globalState.get<string[]>('vscodeTranslate.sourceTabs') ?? [
+      'en',
+      'ja',
+      'vi',
+    ];
+    const targetTabs = this.globalState.get<string[]>('vscodeTranslate.targetTabs') ?? [
+      'vi',
+      'en',
+      'ja',
+    ];
 
     const iconUri = webviewView.webview
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'icon.png'))
@@ -50,6 +65,8 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       panelLanguage: panelLanguage,
       defaultSource: source,
       defaultTarget: target,
+      sourceTabs: sourceTabs,
+      targetTabs: targetTabs,
       iconUri: iconUri,
       googleIconUri: googleIconUri,
       deeplIconUri: deeplIconUri,
@@ -66,6 +83,11 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
         key?: string;
         value?: unknown;
         enabled?: boolean;
+        requestId?: number;
+        targetLang?: string;
+        sourceLang?: string;
+        sourceTabs?: string[];
+        targetTabs?: string[];
       }) => {
         switch (data.command) {
           case 'getSettings': {
@@ -73,14 +95,27 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
             break;
           }
 
+          case 'updateLanguageState':
+          case 'saveLanguageState': {
+            if (data.sourceLang) {
+              await this.globalState.update('vscodeTranslate.sourceLang', data.sourceLang);
+            }
+            if (data.targetLang) {
+              await this.globalState.update('vscodeTranslate.targetLang', data.targetLang);
+            }
+            if (data.sourceTabs && Array.isArray(data.sourceTabs)) {
+              await this.globalState.update('vscodeTranslate.sourceTabs', data.sourceTabs);
+            }
+            if (data.targetTabs && Array.isArray(data.targetTabs)) {
+              await this.globalState.update('vscodeTranslate.targetTabs', data.targetTabs);
+            }
+            break;
+          }
+
           case 'updateConfig': {
             if (data.key) {
               const currentConf = vscode.workspace.getConfiguration('vscodeTranslate');
-              await currentConf.update(
-                data.key,
-                data.value,
-                vscode.ConfigurationTarget.Global
-              );
+              await currentConf.update(data.key, data.value, vscode.ConfigurationTarget.Global);
             }
             break;
           }
@@ -106,17 +141,14 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
           }
 
           case 'translate': {
-            if (data.provider) {
-              const currentConf = vscode.workspace.getConfiguration('vscodeTranslate');
-              await currentConf.update(
-                'provider',
-                data.provider,
-                vscode.ConfigurationTarget.Global
-              );
-            }
-
             if (!data.text || !data.text.trim()) {
-              this.sendMessage({ command: 'result', text: '' });
+              this.sendMessage({
+                command: 'result',
+                type: 'result',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
+                text: '',
+              });
               return;
             }
 
@@ -129,13 +161,22 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
 
               this.sendMessage({
                 command: 'result',
+                type: 'result',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
                 text: result.text,
                 provider: result.provider,
                 detectedSourceLanguage: result.detectedSourceLanguage,
               });
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : String(error);
-              this.sendMessage({ command: 'error', message });
+              this.sendMessage({
+                command: 'error',
+                type: 'error',
+                requestId: data.requestId,
+                targetLang: data.targetLang ?? data.to,
+                message,
+              });
             }
             break;
           }
@@ -171,8 +212,22 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
     const hasGemini = !!(await this.secretService.getApiKey('gemini'));
     const hoverEnabled = config.get<boolean>('hoverEnabled', true);
     const panelLanguage = config.get<string>('panelLanguage', 'en');
-    const sourceLanguage = config.get<string>('sourceLanguage', 'auto');
-    const targetLanguage = config.get<string>('targetLanguage', 'vi');
+    const sourceLanguage =
+      this.globalState.get<string>('vscodeTranslate.sourceLang') ??
+      config.get<string>('sourceLanguage', 'auto');
+    const targetLanguage =
+      this.globalState.get<string>('vscodeTranslate.targetLang') ??
+      config.get<string>('targetLanguage', 'vi');
+    const sourceTabs = this.globalState.get<string[]>('vscodeTranslate.sourceTabs') ?? [
+      'en',
+      'ja',
+      'vi',
+    ];
+    const targetTabs = this.globalState.get<string[]>('vscodeTranslate.targetTabs') ?? [
+      'vi',
+      'en',
+      'ja',
+    ];
     const provider = config.get<string>('provider', 'google-free');
 
     this.sendMessage({
@@ -183,6 +238,8 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       panelLanguage,
       sourceLanguage,
       targetLanguage,
+      sourceTabs,
+      targetTabs,
       provider,
     });
   }

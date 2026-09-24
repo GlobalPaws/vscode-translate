@@ -3,6 +3,8 @@ export interface TranslationHtmlOptions {
   panelLanguage?: string;
   defaultSource?: string;
   defaultTarget?: string;
+  sourceTabs?: string[];
+  targetTabs?: string[];
   iconUri?: string;
   googleIconUri?: string;
   deeplIconUri?: string;
@@ -154,6 +156,46 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
   const panelLanguage = options.panelLanguage || 'en';
   const defaultSource = options.defaultSource || 'auto';
   const defaultTarget = options.defaultTarget || 'vi';
+
+  let initialSourceTabs =
+    options.sourceTabs && options.sourceTabs.length > 0
+      ? [...options.sourceTabs]
+      : ['en', 'ja', 'vi'];
+  if (defaultSource !== 'auto' && !initialSourceTabs.includes(defaultSource)) {
+    initialSourceTabs = [
+      defaultSource,
+      ...initialSourceTabs.filter((x) => x !== defaultSource),
+    ].slice(0, 3);
+  } else {
+    initialSourceTabs = initialSourceTabs.slice(0, 3);
+  }
+
+  let initialTargetTabs =
+    options.targetTabs && options.targetTabs.length > 0
+      ? [...options.targetTabs]
+      : ['vi', 'en', 'ja'];
+  if (!initialTargetTabs.includes(defaultTarget)) {
+    initialTargetTabs = [
+      defaultTarget,
+      ...initialTargetTabs.filter((x) => x !== defaultTarget),
+    ].slice(0, 3);
+  } else {
+    initialTargetTabs = initialTargetTabs.slice(0, 3);
+  }
+
+  const getInitialLangName = (code: string): string => {
+    try {
+      const dn = new Intl.DisplayNames([panelLanguage, 'en'], { type: 'language' });
+      const name = dn.of(code);
+      if (name) {
+        return name;
+      }
+    } catch {
+      // fallback
+    }
+    const item = ALL_LANGUAGES.find((l) => l.code === code);
+    return item ? item.name.split(' (')[0] : code;
+  };
 
   const languageOptionsHtml = ALL_LANGUAGES.map((lang) => {
     let displayName = lang.name.split(' (')[0];
@@ -421,6 +463,12 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
       white-space: nowrap;
+    }
+
+    .tabs-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .lang-chip {
@@ -961,17 +1009,17 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           <button class="provider-current-btn" id="providerCurrentBtn" type="button" aria-haspopup="listbox">
             <img id="providerCurrentIcon" class="provider-btn-icon" src="${
               currentProvider === 'deepl'
-                ? (options.deeplIconUri || '')
+                ? options.deeplIconUri || ''
                 : currentProvider === 'gemini'
-                ? (options.geminiIconUri || '')
-                : (options.googleIconUri || '')
+                  ? options.geminiIconUri || ''
+                  : options.googleIconUri || ''
             }" alt="" />
             <span class="provider-btn-text" id="providerCurrentLabel">${
               currentProvider === 'deepl'
                 ? 'DeepL API'
                 : currentProvider === 'gemini'
-                ? 'Google Gemini AI'
-                : 'Google (Free / Online)'
+                  ? 'Google Gemini AI'
+                  : 'Google (Free / Online)'
             }</span>
             <span class="provider-btn-arrow">▾</span>
           </button>
@@ -1004,12 +1052,16 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     
     <!-- Source Box -->
     <div class="card">
-      <div class="lang-toolbar">
+      <div class="lang-toolbar" id="sourceToolbar">
         <button class="lang-chip ${defaultSource === 'auto' ? 'active' : ''}" data-source="auto" id="chipSourceAuto">Detect Language</button>
-        <button class="lang-chip" data-source-dynamic id="chipSourceSelected" style="display: none;"></button>
-        <button class="lang-chip ${defaultSource === 'en' ? 'active' : ''}" data-source="en" id="chipSourceEn">English</button>
-        <button class="lang-chip ${defaultSource === 'ja' ? 'active' : ''}" data-source="ja" id="chipSourceJa">Japanese</button>
-        <button class="lang-chip ${defaultSource === 'vi' ? 'active' : ''}" data-source="vi" id="chipSourceVi">Vietnamese</button>
+        <span id="sourceTabsContainer" class="tabs-container">
+          ${initialSourceTabs
+            .map((code) => {
+              const active = defaultSource === code ? ' active' : '';
+              return `<button class="lang-chip${active}" data-source="${code}">${getInitialLangName(code)}</button>`;
+            })
+            .join('')}
+        </span>
         <div class="lang-dropdown-wrapper" title="More languages">
           <button class="lang-dropdown-btn" id="btnSourceMore" aria-label="More languages" title="More languages">▾</button>
         </div>
@@ -1034,14 +1086,18 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     <!-- Target Box -->
     <div class="card">
-      <div class="lang-toolbar">
+      <div class="lang-toolbar" id="targetToolbar">
         <div class="swap-btn-container">
           <button id="btnSwap" class="swap-btn" title="Swap languages">⇄</button>
         </div>
-        <button class="lang-chip" data-target-dynamic id="chipTargetSelected" style="display: none;"></button>
-        <button class="lang-chip ${defaultTarget === 'vi' ? 'active' : ''}" data-target="vi" id="chipTargetVi">Vietnamese</button>
-        <button class="lang-chip ${defaultTarget === 'en' ? 'active' : ''}" data-target="en" id="chipTargetEn">English</button>
-        <button class="lang-chip ${defaultTarget === 'ja' ? 'active' : ''}" data-target="ja" id="chipTargetJa">Japanese</button>
+        <span id="targetTabsContainer" class="tabs-container">
+          ${initialTargetTabs
+            .map((code) => {
+              const active = defaultTarget === code ? ' active' : '';
+              return `<button class="lang-chip${active}" data-target="${code}">${getInitialLangName(code)}</button>`;
+            })
+            .join('')}
+        </span>
         <div class="lang-dropdown-wrapper" title="More languages">
           <button class="lang-dropdown-btn" id="btnTargetMore" aria-label="More languages" title="More languages">▾</button>
         </div>
@@ -1192,10 +1248,19 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
   <script>
     const vscode = acquireVsCodeApi();
+    const savedState = (typeof vscode.getState === 'function' ? vscode.getState() : null) || {};
     let currentPanelLang = '${panelLanguage}';
-    let currentSourceLang = '${defaultSource}';
-    let currentTargetLang = '${defaultTarget}';
+    let currentSourceLang = savedState.sourceLang || '${defaultSource}';
+    let currentTargetLang = savedState.targetLang || '${defaultTarget}';
+    let currentSourceTabs = (savedState.sourceTabs && Array.isArray(savedState.sourceTabs) && savedState.sourceTabs.length > 0)
+      ? savedState.sourceTabs
+      : ${JSON.stringify(initialSourceTabs)};
+    let currentTargetTabs = (savedState.targetTabs && Array.isArray(savedState.targetTabs) && savedState.targetTabs.length > 0)
+      ? savedState.targetTabs
+      : ${JSON.stringify(initialTargetTabs)};
     let currentProvider = '${currentProvider}';
+    let currentRequestId = 0;
+    let latestRequestId = 0;
     let activePickerType = null; // 'source' | 'target'
     let debounceTimer = null;
     let lastTranslatedResult = '';
@@ -1637,8 +1702,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     const btnSourceSpeech = document.getElementById('btnSourceSpeech');
     const btnTargetSpeech = document.getElementById('btnTargetSpeech');
     const providerSelect = document.getElementById('providerSelect');
-    const chipSourceSelected = document.getElementById('chipSourceSelected');
-    const chipTargetSelected = document.getElementById('chipTargetSelected');
+    const sourceToolbar = document.getElementById('sourceToolbar');
+    const targetToolbar = document.getElementById('targetToolbar');
+    const sourceTabsContainer = document.getElementById('sourceTabsContainer');
+    const targetTabsContainer = document.getElementById('targetTabsContainer');
     const btnSourceMore = document.getElementById('btnSourceMore');
     const btnTargetMore = document.getElementById('btnTargetMore');
     const loadingIndicator = document.getElementById('loadingIndicator');
@@ -1755,6 +1822,89 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
     }
 
+    function updateTabList(tabs, newLang) {
+      if (!newLang || newLang === 'auto') return tabs;
+      const filtered = (tabs || []).filter(l => l !== newLang);
+      return [newLang, ...filtered].slice(0, 3);
+    }
+
+    function persistLanguageState() {
+      const state = {
+        sourceLang: currentSourceLang,
+        targetLang: currentTargetLang,
+        sourceTabs: currentSourceTabs,
+        targetTabs: currentTargetTabs,
+      };
+      if (typeof vscode.setState === 'function') {
+        vscode.setState(state);
+      }
+      vscode.postMessage({
+        command: 'updateLanguageState',
+        ...state,
+      });
+    }
+
+    function getLangDisplayLabel(code) {
+      if (code === 'auto') {
+        const t = I18N[currentPanelLang] || I18N.en;
+        return t.chipAuto || 'Detect Language';
+      }
+      const t = I18N[currentPanelLang] || I18N.en;
+      if (code === 'en' && t.chipEn) return t.chipEn;
+      if (code === 'ja' && t.chipJa) return t.chipJa;
+      if (code === 'vi' && t.chipVi) return t.chipVi;
+
+      try {
+        const dn = new Intl.DisplayNames([currentPanelLang, 'en'], { type: 'language' });
+        const name = dn.of(code);
+        if (name) return name;
+      } catch (e) {
+        // fallback
+      }
+      const item = ALL_LANGS.find(l => l.code === code);
+      return item ? item.name.split(' (')[0] : code;
+    }
+
+    function renderTabs() {
+      const t = I18N[currentPanelLang] || I18N.en;
+      const autoChip = document.getElementById('chipSourceAuto');
+      if (autoChip) {
+        autoChip.textContent = t.chipAuto || 'Detect Language';
+        if (currentSourceLang === 'auto') {
+          autoChip.classList.add('active');
+        } else {
+          autoChip.classList.remove('active');
+        }
+      }
+
+      const sourceContainer = document.getElementById('sourceTabsContainer');
+      if (sourceContainer) {
+        sourceContainer.innerHTML = currentSourceTabs.map(code => {
+          const activeClass = (currentSourceLang === code) ? ' active' : '';
+          const label = getLangDisplayLabel(code);
+          return '<button class="lang-chip' + activeClass + '" data-source="' + code + '">' + label + '</button>';
+        }).join('');
+      }
+
+      const targetContainer = document.getElementById('targetTabsContainer');
+      if (targetContainer) {
+        targetContainer.innerHTML = currentTargetTabs.map(code => {
+          const activeClass = (currentTargetLang === code) ? ' active' : '';
+          const label = getLangDisplayLabel(code);
+          return '<button class="lang-chip' + activeClass + '" data-target="' + code + '">' + label + '</button>';
+        }).join('');
+      }
+    }
+
+    function updateLangUi(lang, isSource) {
+      if (isSource) {
+        currentSourceLang = lang;
+      } else {
+        currentTargetLang = lang;
+      }
+      renderTabs();
+    }
+
     function applyI18n(lang) {
       const t = I18N[lang] || I18N.en;
       const setSafeText = (id, text) => {
@@ -1765,13 +1915,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       setSafeText('txtBrandTitle', t.brandTitle);
       setSafeText('txtEngineLabel', t.engineLabel);
       setSafeText('chipSourceAuto', t.chipAuto);
-      setSafeText('chipSourceEn', t.chipEn);
-      setSafeText('chipSourceJa', t.chipJa);
-      setSafeText('chipSourceVi', t.chipVi);
 
-      setSafeText('chipTargetVi', t.chipVi);
-      setSafeText('chipTargetEn', t.chipEn);
-      setSafeText('chipTargetJa', t.chipJa);
+      renderTabs();
 
       const sourceEl = document.getElementById('sourceText');
       if (sourceEl) {
@@ -1831,22 +1976,29 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     panelLangSelect.addEventListener('change', () => {
       currentPanelLang = panelLangSelect.value;
       applyI18n(currentPanelLang);
-      updateLangUi(currentSourceLang, true);
-      updateLangUi(currentTargetLang, false);
+      renderTabs();
       vscode.postMessage({ command: 'updateConfig', key: 'panelLanguage', value: currentPanelLang });
     });
 
     defaultSourceSelect.addEventListener('change', () => {
-      vscode.postMessage({ command: 'updateConfig', key: 'sourceLanguage', value: defaultSourceSelect.value });
-      currentSourceLang = defaultSourceSelect.value;
-      updateLangUi(currentSourceLang, true);
+      const val = defaultSourceSelect.value;
+      vscode.postMessage({ command: 'updateConfig', key: 'sourceLanguage', value: val });
+      currentSourceLang = val;
+      if (val !== 'auto') {
+        currentSourceTabs = updateTabList(currentSourceTabs, val);
+      }
+      renderTabs();
+      persistLanguageState();
       triggerTranslation(true);
     });
 
     defaultTargetSelect.addEventListener('change', () => {
-      vscode.postMessage({ command: 'updateConfig', key: 'targetLanguage', value: defaultTargetSelect.value });
-      currentTargetLang = defaultTargetSelect.value;
-      updateLangUi(currentTargetLang, false);
+      const val = defaultTargetSelect.value;
+      vscode.postMessage({ command: 'updateConfig', key: 'targetLanguage', value: val });
+      currentTargetLang = val;
+      currentTargetTabs = updateTabList(currentTargetTabs, val);
+      renderTabs();
+      persistLanguageState();
       triggerTranslation(true);
     });
 
@@ -1876,57 +2028,50 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       vscode.postMessage({ command: 'updateConfig', key: 'hoverEnabled', value: hoverCheckbox.checked });
     });
 
-    function updateLangUi(lang, isSource) {
-      const dynamicChip = isSource ? chipSourceSelected : chipTargetSelected;
-      const fixedSelector = isSource
-        ? '.lang-chip[data-source]:not([data-source-dynamic])'
-        : '.lang-chip[data-target]:not([data-target-dynamic])';
-      const fixedChips = document.querySelectorAll(fixedSelector);
+    function getChipFromEvent(e, attr) {
+      if (!e || !e.target) return null;
+      if (typeof e.target.closest === 'function') {
+        return e.target.closest('.lang-chip[' + attr + ']');
+      }
+      let el = e.target;
+      while (el && el !== document) {
+        if (typeof el.getAttribute === 'function' && el.getAttribute(attr)) {
+          return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
 
-      let matchedFixed = false;
-      fixedChips.forEach(b => {
-        const chipLang = b.getAttribute(isSource ? 'data-source' : 'data-target');
-        if (chipLang === lang) {
-          b.classList.add('active');
-          matchedFixed = true;
-        } else {
-          b.classList.remove('active');
+    if (sourceToolbar) {
+      sourceToolbar.addEventListener('click', (e) => {
+        const chip = getChipFromEvent(e, 'data-source');
+        if (!chip) return;
+        const lang = chip.getAttribute('data-source');
+        if (!lang) return;
+        if (currentSourceLang !== lang) {
+          currentSourceLang = lang;
+          renderTabs();
+          persistLanguageState();
+          triggerTranslation(true);
         }
       });
-
-      if (matchedFixed) {
-        dynamicChip.style.display = 'none';
-        dynamicChip.classList.remove('active');
-        dynamicChip.removeAttribute(isSource ? 'data-source' : 'data-target');
-      } else {
-        const label = getShortLanguageName(lang);
-        dynamicChip.textContent = label;
-        dynamicChip.setAttribute(isSource ? 'data-source' : 'data-target', lang);
-        dynamicChip.style.display = 'inline-flex';
-        dynamicChip.classList.add('active');
-      }
     }
 
-    // Initialize chips
-    function setupChips(selector, isSource) {
-      document.querySelectorAll(selector).forEach(btn => {
-        btn.addEventListener('click', () => {
-          const lang = btn.getAttribute(isSource ? 'data-source' : 'data-target');
-          if (!lang) return;
-          if (isSource) {
-            currentSourceLang = lang;
-            updateLangUi(lang, true);
-          } else {
-            currentTargetLang = lang;
-            updateLangUi(lang, false);
-          }
+    if (targetToolbar) {
+      targetToolbar.addEventListener('click', (e) => {
+        const chip = getChipFromEvent(e, 'data-target');
+        if (!chip) return;
+        const lang = chip.getAttribute('data-target');
+        if (!lang) return;
+        if (currentTargetLang !== lang) {
+          currentTargetLang = lang;
+          renderTabs();
+          persistLanguageState();
           triggerTranslation(true);
-        });
+        }
       });
     }
-
-    setupChips('.lang-chip[data-source]', true);
-    setupChips('.lang-chip[data-target]', false);
 
     // Language Picker Logic
     function getDisplayLanguageList(langCode) {
@@ -2063,11 +2208,17 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     function selectPickerLanguage(code) {
       if (activePickerType === 'source') {
         currentSourceLang = code;
-        updateLangUi(currentSourceLang, true);
+        if (code !== 'auto') {
+          currentSourceTabs = updateTabList(currentSourceTabs, code);
+        }
+        renderTabs();
+        persistLanguageState();
         triggerTranslation(true);
       } else if (activePickerType === 'target') {
         currentTargetLang = code;
-        updateLangUi(currentTargetLang, false);
+        currentTargetTabs = updateTabList(currentTargetTabs, code);
+        renderTabs();
+        persistLanguageState();
         triggerTranslation(true);
       }
       closeLanguagePicker();
@@ -2151,8 +2302,13 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         loadingIndicator.style.display = 'flex';
         errorBanner.style.display = 'none';
 
+        const reqId = ++currentRequestId;
+        latestRequestId = reqId;
+
         vscode.postMessage({
           command: 'translate',
+          requestId: reqId,
+          targetLang: currentTargetLang,
           text: text,
           from: currentSourceLang,
           to: currentTargetLang,
@@ -2163,16 +2319,17 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Swap Languages
     btnSwap.addEventListener('click', () => {
-      if (currentSourceLang === 'auto') {
-        currentSourceLang = 'en';
-      }
-      const tempLang = currentSourceLang;
-      currentSourceLang = currentTargetLang;
-      currentTargetLang = tempLang;
+      const newSource = currentTargetLang;
+      const newTarget = currentSourceLang === 'auto' ? 'en' : currentSourceLang;
 
-      // Update chips & dropdowns
-      updateLangUi(currentSourceLang, true);
-      updateLangUi(currentTargetLang, false);
+      currentSourceLang = newSource;
+      currentTargetLang = newTarget;
+
+      currentSourceTabs = updateTabList(currentSourceTabs, currentSourceLang);
+      currentTargetTabs = updateTabList(currentTargetTabs, currentTargetLang);
+
+      renderTabs();
+      persistLanguageState();
 
       // Also swap text if target has result
       if (lastTranslatedResult) {
@@ -2184,8 +2341,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     });
 
     // Initialize initial language UI states
-    updateLangUi(currentSourceLang, true);
-    updateLangUi(currentTargetLang, false);
+    renderTabs();
 
     btnClearSource.addEventListener('click', () => {
       const t = I18N[currentPanelLang] || I18N.en;
@@ -2365,13 +2521,33 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         if (msg.targetLanguage) {
           defaultTargetSelect.value = msg.targetLanguage;
         }
+
+        if (msg.sourceTabs && Array.isArray(msg.sourceTabs) && msg.sourceTabs.length > 0) {
+          currentSourceTabs = msg.sourceTabs;
+        }
+        if (msg.targetTabs && Array.isArray(msg.targetTabs) && msg.targetTabs.length > 0) {
+          currentTargetTabs = msg.targetTabs;
+        }
+        renderTabs();
         return;
       }
 
-      if (msg.command === 'result') {
-        lastTranslatedResult = msg.text;
-        targetText.textContent = msg.text;
-        targetText.classList.remove('placeholder');
+      if (msg.command === 'result' || msg.type === 'result' || msg.command === 'translationResult') {
+        if (msg.requestId !== undefined && msg.requestId !== latestRequestId) {
+          return;
+        }
+        if (msg.targetLang && msg.targetLang !== currentTargetLang) {
+          return;
+        }
+        lastTranslatedResult = msg.text || '';
+        targetText.textContent = msg.text || '';
+        if (!msg.text) {
+          const t = I18N[currentPanelLang] || I18N.en;
+          targetText.textContent = t.targetPlaceholder;
+          targetText.classList.add('placeholder');
+        } else {
+          targetText.classList.remove('placeholder');
+        }
         errorBanner.style.display = 'none';
 
         if (msg.detectedSourceLanguage && currentSourceLang === 'auto') {
@@ -2380,8 +2556,14 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
             autoChip.textContent = (I18N[currentPanelLang]?.chipAuto || 'Detect Language') + ' (' + msg.detectedSourceLanguage + ')';
           }
         }
-      } else if (msg.command === 'error') {
-        errorBanner.textContent = msg.message;
+      } else if (msg.command === 'error' || msg.type === 'error' || msg.command === 'translationError') {
+        if (msg.requestId !== undefined && msg.requestId !== latestRequestId) {
+          return;
+        }
+        if (msg.targetLang && msg.targetLang !== currentTargetLang) {
+          return;
+        }
+        errorBanner.textContent = msg.message || 'Translation error occurred.';
         errorBanner.style.display = 'block';
       }
     });
@@ -2392,8 +2574,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         providerSelect.value = currentProvider;
       }
       applyI18n(currentPanelLang);
-      updateLangUi(currentSourceLang, true);
-      updateLangUi(currentTargetLang, false);
+      renderTabs();
       updateCustomProviderUi(currentProvider);
       vscode.postMessage({ command: 'getSettings' });
     } catch (err) {

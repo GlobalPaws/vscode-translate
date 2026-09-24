@@ -2,6 +2,13 @@
 
 All notable changes to the "ai-multi-translate" extension will be documented in this file.
 
+## [0.1.7] - 2026-09-24
+
+### Changed
+- Persist target language selection in VS Code globalState across sessions and reloads.
+- Improved target language tabs to maintain and push the top 3 most recently selected languages while preserving default language placement.
+- Prevent translation race conditions and request clashes when rapidly switching between languages or engines with per-language cancellation tokens.
+
 ## [0.1.6] - 2026-09-18
 
 ### Changed
