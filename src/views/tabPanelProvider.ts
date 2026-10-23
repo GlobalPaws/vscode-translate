@@ -95,6 +95,10 @@ export class TranslationTabPanel {
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'google-gemini-icon.webp'))
       .toString();
 
+    const zoomLevel =
+      this.globalState.get<number>('vscodeTranslate.zoomLevel') ??
+      config.get<number>('zoomLevel', 100);
+
     this._panel.webview.html = getTranslationHtml({
       currentProvider: provider,
       panelLanguage: panelLanguage,
@@ -102,6 +106,7 @@ export class TranslationTabPanel {
       defaultTarget: target,
       sourceTabs: sourceTabs,
       targetTabs: targetTabs,
+      zoomLevel: zoomLevel,
       iconUri: iconUri,
       googleIconUri: googleIconUri,
       deeplIconUri: deeplIconUri,
@@ -145,6 +150,14 @@ export class TranslationTabPanel {
             }
             if (data.targetTabs && Array.isArray(data.targetTabs)) {
               await this.globalState.update('vscodeTranslate.targetTabs', data.targetTabs);
+            }
+            break;
+          }
+
+          case 'saveZoom':
+          case 'updateZoom': {
+            if (typeof data.value === 'number') {
+              await this.globalState.update('vscodeTranslate.zoomLevel', data.value);
             }
             break;
           }
@@ -200,10 +213,13 @@ export class TranslationTabPanel {
                 command: 'result',
                 type: 'result',
                 requestId: data.requestId,
+                sourceLang: data.from,
                 targetLang: data.targetLang ?? data.to,
                 text: result.text,
                 provider: result.provider,
                 detectedSourceLanguage: result.detectedSourceLanguage,
+                sourceTransliteration: result.sourceTransliteration,
+                targetTransliteration: result.targetTransliteration,
               });
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : String(error);
@@ -281,6 +297,9 @@ export class TranslationTabPanel {
       'ja',
     ];
     const provider = config.get<string>('provider', 'google-free');
+    const zoomLevel =
+      this.globalState.get<number>('vscodeTranslate.zoomLevel') ??
+      config.get<number>('zoomLevel', 100);
 
     this._panel.webview.postMessage({
       command: 'settingsState',
@@ -293,6 +312,7 @@ export class TranslationTabPanel {
       sourceTabs,
       targetTabs,
       provider,
+      zoomLevel,
     });
   }
 

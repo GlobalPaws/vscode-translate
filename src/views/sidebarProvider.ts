@@ -47,6 +47,10 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       'ja',
     ];
 
+    const zoomLevel =
+      this.globalState.get<number>('vscodeTranslate.zoomLevel') ??
+      config.get<number>('zoomLevel', 100);
+
     const iconUri = webviewView.webview
       .asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'icon.png'))
       .toString();
@@ -67,6 +71,7 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       defaultTarget: target,
       sourceTabs: sourceTabs,
       targetTabs: targetTabs,
+      zoomLevel: zoomLevel,
       iconUri: iconUri,
       googleIconUri: googleIconUri,
       deeplIconUri: deeplIconUri,
@@ -108,6 +113,14 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
             }
             if (data.targetTabs && Array.isArray(data.targetTabs)) {
               await this.globalState.update('vscodeTranslate.targetTabs', data.targetTabs);
+            }
+            break;
+          }
+
+          case 'saveZoom':
+          case 'updateZoom': {
+            if (typeof data.value === 'number') {
+              await this.globalState.update('vscodeTranslate.zoomLevel', data.value);
             }
             break;
           }
@@ -163,10 +176,13 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
                 command: 'result',
                 type: 'result',
                 requestId: data.requestId,
+                sourceLang: data.from,
                 targetLang: data.targetLang ?? data.to,
                 text: result.text,
                 provider: result.provider,
                 detectedSourceLanguage: result.detectedSourceLanguage,
+                sourceTransliteration: result.sourceTransliteration,
+                targetTransliteration: result.targetTransliteration,
               });
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : String(error);
@@ -229,6 +245,9 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       'ja',
     ];
     const provider = config.get<string>('provider', 'google-free');
+    const zoomLevel =
+      this.globalState.get<number>('vscodeTranslate.zoomLevel') ??
+      config.get<number>('zoomLevel', 100);
 
     this.sendMessage({
       command: 'settingsState',
@@ -241,6 +260,7 @@ export class SidebarTranslationViewProvider implements vscode.WebviewViewProvide
       sourceTabs,
       targetTabs,
       provider,
+      zoomLevel,
     });
   }
 

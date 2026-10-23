@@ -23,8 +23,7 @@ export class TranslateCommands {
     }
 
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
-    const targetLang = config.get<string>('targetLanguage', 'ja');
-    const sourceLang = config.get<string>('sourceLanguage', 'auto');
+    const { from, to } = this.getSafeLanguages(config);
 
     try {
       const result = await vscode.window.withProgress(
@@ -35,7 +34,7 @@ export class TranslateCommands {
         },
         async () => {
           const translator = await this.translatorFactory.getTranslator();
-          return await translator.translate(text, { from: sourceLang, to: targetLang });
+          return await translator.translate(text, { from, to });
         }
       );
 
@@ -94,8 +93,7 @@ export class TranslateCommands {
     }
 
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
-    const targetLang = config.get<string>('targetLanguage', 'ja');
-    const sourceLang = config.get<string>('sourceLanguage', 'auto');
+    const { from, to } = this.getSafeLanguages(config);
 
     try {
       const result = await vscode.window.withProgress(
@@ -106,7 +104,7 @@ export class TranslateCommands {
         },
         async () => {
           const translator = await this.translatorFactory.getTranslator();
-          return await translator.translate(text, { from: sourceLang, to: targetLang });
+          return await translator.translate(text, { from, to });
         }
       );
 
@@ -132,8 +130,7 @@ export class TranslateCommands {
     }
 
     const config = vscode.workspace.getConfiguration('vscodeTranslate');
-    const targetLang = config.get<string>('targetLanguage', 'ja');
-    const sourceLang = config.get<string>('sourceLanguage', 'auto');
+    const { from, to } = this.getSafeLanguages(config);
 
     try {
       const result = await vscode.window.withProgress(
@@ -144,7 +141,7 @@ export class TranslateCommands {
         },
         async () => {
           const translator = await this.translatorFactory.getTranslator();
-          return await translator.translate(text, { from: sourceLang, to: targetLang });
+          return await translator.translate(text, { from, to });
         }
       );
 
@@ -200,5 +197,15 @@ export class TranslateCommands {
 
     await this.secretService.deleteApiKey(providerItem.id);
     vscode.window.showInformationMessage(`API Key for ${providerItem.label} was removed.`);
+  }
+
+  private getSafeLanguages(config: vscode.WorkspaceConfiguration): { from: string; to: string } {
+    const targetLang = config.get<string>('targetLanguage', 'ja');
+    const sourceLang = config.get<string>('sourceLanguage', 'auto');
+    let to = targetLang;
+    if (sourceLang !== 'auto' && sourceLang === to) {
+      to = sourceLang === 'en' ? 'ja' : 'en';
+    }
+    return { from: sourceLang, to };
   }
 }

@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=GlobalPaws.ai-multi-translate"><img src="https://img.shields.io/badge/marketplace-v0.1.7-blue.svg" alt="Marketplace" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=GlobalPaws.ai-multi-translate"><img src="https://img.shields.io/badge/marketplace-v0.1.8-blue.svg" alt="Marketplace" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" /></a>
 </p>
 

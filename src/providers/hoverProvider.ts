@@ -42,7 +42,10 @@ export class TranslationHoverProvider implements vscode.HoverProvider {
 
     const targetLang = config.get<string>('targetLanguage', 'ja');
     const sourceLang = config.get<string>('sourceLanguage', 'auto');
-    const cacheKey = `${sourceLang}:${targetLang}:${textToTranslate}`;
+    const to = sourceLang !== 'auto' && sourceLang === targetLang
+      ? (sourceLang === 'en' ? 'ja' : 'en')
+      : targetLang;
+    const cacheKey = `${sourceLang}:${to}:${textToTranslate}`;
 
     let translatedText = this.cache.get(cacheKey);
 
@@ -54,7 +57,7 @@ export class TranslationHoverProvider implements vscode.HoverProvider {
         const translator = await this.translatorFactory.getTranslator();
         const result = await translator.translate(textToTranslate, {
           from: sourceLang,
-          to: targetLang,
+          to,
         });
         translatedText = `**[${result.provider}]**\n\n${result.text}`;
         this.cache.set(cacheKey, translatedText);

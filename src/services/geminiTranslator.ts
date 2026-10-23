@@ -114,6 +114,7 @@ export class GeminiTranslator implements ITranslator {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(requestBody),
+            signal: AbortSignal.timeout(15000),
           });
 
           if (response.status === 404) {
@@ -157,7 +158,7 @@ export class GeminiTranslator implements ITranslator {
     const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(
       this.apiKey
     )}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
     if (!res.ok) {
       return [];
     }

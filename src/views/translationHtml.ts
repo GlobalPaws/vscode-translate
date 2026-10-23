@@ -5,6 +5,7 @@ export interface TranslationHtmlOptions {
   defaultTarget?: string;
   sourceTabs?: string[];
   targetTabs?: string[];
+  zoomLevel?: number;
   iconUri?: string;
   googleIconUri?: string;
   deeplIconUri?: string;
@@ -247,15 +248,23 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       padding: 0;
     }
 
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
     body {
       font-family: var(--font-family);
       background-color: var(--bg-color);
       color: var(--text-color);
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      overflow-x: hidden;
+      padding: 12px;
+      box-sizing: border-box;
       position: relative;
     }
 
@@ -264,10 +273,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .top-bar-left {
@@ -419,6 +429,30 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       flex-shrink: 0;
     }
 
+    .provider-btn-check {
+      display: none;
+      color: #22c55e;
+      font-weight: bold;
+      font-size: 13px;
+      margin-left: 4px;
+    }
+
+    .provider-btn-check.configured {
+      display: inline-flex;
+    }
+
+    .provider-option-check {
+      display: none;
+      margin-left: auto;
+      color: #22c55e;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .provider-option-check.configured {
+      display: inline-flex;
+    }
+
     .setting-section-header-icon {
       width: 18px;
       height: 18px;
@@ -432,14 +466,16 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     .translation-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 12px;
       flex: 1;
-      min-height: 380px;
+      min-height: 0;
+      height: 100%;
     }
 
     @media (max-width: 700px) {
       .translation-container {
         grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
       }
     }
 
@@ -452,6 +488,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       flex-direction: column;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       position: relative;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Language Toolbars */
@@ -459,10 +497,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       display: flex;
       align-items: center;
       gap: 4px;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .tabs-container {
@@ -554,23 +593,27 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     /* Content Area */
     .content-area {
       flex: 1;
-      padding: 12px;
+      min-height: 0;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      position: relative;
     }
 
     textarea.source-text {
       width: 100%;
       flex: 1;
-      min-height: 220px;
+      min-height: 0;
       border: none;
       background: transparent;
       color: var(--text-color);
       font-family: inherit;
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 14px;
+      line-height: 1.5;
       resize: none;
       outline: none;
+      overflow-y: auto;
     }
 
     textarea.source-text::placeholder {
@@ -580,14 +623,32 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     .target-output {
       flex: 1;
-      min-height: 220px;
-      font-size: 15px;
-      line-height: 1.6;
+      min-height: 0;
+      font-size: 14px;
+      line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
       user-select: text;
       color: var(--text-color);
       position: relative;
+      overflow-y: auto;
+    }
+
+    textarea.source-text::-webkit-scrollbar,
+    .target-output::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    textarea.source-text::-webkit-scrollbar-thumb,
+    .target-output::-webkit-scrollbar-thumb {
+      background: var(--vscode-scrollbarSlider-background, rgba(128, 128, 128, 0.3));
+      border-radius: 3px;
+    }
+
+    textarea.source-text::-webkit-scrollbar-thumb:hover,
+    .target-output::-webkit-scrollbar-thumb:hover {
+      background: var(--vscode-scrollbarSlider-hoverBackground, rgba(128, 128, 128, 0.5));
     }
 
     .target-output.placeholder {
@@ -600,10 +661,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-top: 1px solid var(--border-color);
       font-size: 12px;
       color: var(--subtext-color);
+      flex-shrink: 0;
     }
 
     #charCount.exceeded {
@@ -653,6 +715,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       gap: 6px;
       font-size: 12px;
       color: var(--primary-color);
+      margin-left: 6px;
+      flex-shrink: 0;
     }
 
     .spinner {
@@ -705,12 +769,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       width: 90%;
       max-width: 540px;
       max-height: 90vh;
-      overflow-y: auto;
-      padding: 20px;
+      overflow: hidden;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 16px;
     }
 
     .modal-header {
@@ -718,7 +780,18 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 10px;
+      padding: 16px 20px;
+      background: var(--modal-bg);
+      flex-shrink: 0;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
     }
 
     .modal-header h3 {
@@ -838,6 +911,127 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       align-items: center;
       justify-content: space-between;
       padding: 4px 0;
+    }
+
+    .phonetic-text {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--subtext-color);
+      font-style: italic;
+      user-select: text;
+      word-break: break-word;
+      opacity: 0.85;
+      padding: 4px 0 2px 0;
+      border-top: 1px dashed var(--border-color);
+      flex-shrink: 0;
+      max-height: 50px;
+      overflow-y: auto;
+    }
+
+    .lang-suggestion-banner {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      font-size: 12px;
+      color: var(--subtext-color);
+      user-select: none;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .suggestion-icon {
+      color: var(--primary-color);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .suggestion-link {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin: 0;
+      font-family: inherit;
+    }
+
+    .suggestion-link:hover {
+      opacity: 0.8;
+    }
+
+    .zoom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .zoom-controller {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--chip-bg);
+      padding: 4px 10px;
+      border-radius: 22px;
+      border: 1px solid var(--border-color);
+    }
+
+    .zoom-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--btn-hover);
+      border: none;
+      border-radius: 50%;
+      color: var(--text-color);
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1;
+    }
+
+    .zoom-btn:hover {
+      background: var(--active-tab-bg);
+      color: var(--primary-color);
+      transform: scale(1.08);
+    }
+
+    .zoom-btn:active {
+      transform: scale(0.95);
+    }
+
+    .zoom-value {
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 48px;
+      text-align: center;
+      color: var(--text-color);
+      user-select: none;
+    }
+
+    .zoom-reset-btn {
+      background: none;
+      border: none;
+      color: var(--subtext-color);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s;
+    }
+
+    .zoom-reset-btn:hover {
+      color: var(--primary-color);
     }
 
     /* Language Picker Modal */
@@ -1021,6 +1215,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
                   ? 'Google Gemini AI'
                   : 'Google (Free / Online)'
             }</span>
+            <span class="provider-btn-check" id="providerCurrentCheck" title="API Key Configured">✓</span>
             <span class="provider-btn-arrow">▾</span>
           </button>
           <div class="provider-options-menu" id="providerOptionsMenu" role="listbox">
@@ -1028,19 +1223,21 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
               ${options.googleIconUri ? `<img src="${options.googleIconUri}" class="provider-option-icon" alt="" />` : ''}
               <span>Google (Free / Online)</span>
             </div>
-            <div class="provider-option-item ${currentProvider === 'deepl' ? 'selected' : ''}" data-value="deepl">
-              ${options.deeplIconUri ? `<img src="${options.deeplIconUri}" class="provider-option-icon" alt="" />` : ''}
-              <span>DeepL API</span>
-            </div>
             <div class="provider-option-item ${currentProvider === 'gemini' ? 'selected' : ''}" data-value="gemini">
               ${options.geminiIconUri ? `<img src="${options.geminiIconUri}" class="provider-option-icon" alt="" />` : ''}
               <span>Google Gemini AI</span>
+              <span class="provider-option-check" id="optCheckGemini" title="API Key Configured">✓</span>
+            </div>
+            <div class="provider-option-item ${currentProvider === 'deepl' ? 'selected' : ''}" data-value="deepl">
+              ${options.deeplIconUri ? `<img src="${options.deeplIconUri}" class="provider-option-icon" alt="" />` : ''}
+              <span>DeepL API</span>
+              <span class="provider-option-check" id="optCheckDeepl" title="API Key Configured">✓</span>
             </div>
           </div>
           <select id="providerSelect" style="display: none;">
             <option value="google-free" ${currentProvider === 'google-free' ? 'selected' : ''}>Google (Free / Online)</option>
-            <option value="deepl" ${currentProvider === 'deepl' ? 'selected' : ''}>DeepL API</option>
             <option value="gemini" ${currentProvider === 'gemini' ? 'selected' : ''}>Google Gemini AI</option>
+            <option value="deepl" ${currentProvider === 'deepl' ? 'selected' : ''}>DeepL API</option>
           </select>
         </div>
       </div>
@@ -1073,12 +1270,22 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
             ? 'Type or paste text to translate... (Max 500 chars)'
             : 'Type or paste text to translate...'
         }" maxlength="${currentProvider === 'google-free' ? '500' : '5000'}" autofocus></textarea>
+        <div id="sourcePhonetic" class="phonetic-text" style="display: none;"></div>
       </div>
 
       <div class="card-footer">
         <div class="footer-actions">
           <button id="btnSourceSpeech" class="icon-btn" title="Listen">🔊</button>
           <button id="btnClearSource" class="icon-btn" title="Clear"><span id="txtBtnClear">✕ Clear</span></button>
+          <div class="translating-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <span id="txtTranslating">Translating...</span>
+          </div>
+          <div id="langSuggestionBanner" class="lang-suggestion-banner" style="display: none;">
+            <span class="suggestion-icon">✨</span>
+            <span id="txtLangSuggestionPrefix">原文の言語:</span>
+            <button type="button" class="suggestion-link" id="btnApplySuggestedLang"></button>
+          </div>
         </div>
         <div id="charCount">0 / ${currentProvider === 'google-free' ? '500' : '5,000'}</div>
       </div>
@@ -1105,6 +1312,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
       <div class="content-area">
         <div id="targetText" class="target-output placeholder">Translation will appear here in real-time...</div>
+        <div id="targetPhonetic" class="phonetic-text" style="display: none;"></div>
       </div>
 
       <div class="card-footer">
@@ -1112,10 +1320,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           <button id="btnTargetSpeech" class="icon-btn" title="Listen">🔊</button>
           <button id="btnCopy" class="icon-btn" title="Copy"><span id="txtBtnCopy">📋 Copy</span></button>
           <button id="btnInsert" class="icon-btn primary" title="Insert to Editor"><span id="txtBtnInsert">📝 Insert to Editor</span></button>
-        </div>
-        <div class="translating-indicator" id="loadingIndicator">
-          <div class="spinner"></div>
-          <span id="txtTranslating">Translating...</span>
         </div>
       </div>
     </div>
@@ -1149,6 +1353,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         <h3 id="txtModalTitle">⚙️ Settings & Configuration</h3>
         <button class="btn-close-modal" id="btnCloseModal" title="Close">✕</button>
       </div>
+
+      <div class="modal-body">
 
       <!-- Panel UI Language & Default Translation Languages -->
       <div class="setting-section">
@@ -1197,6 +1403,37 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         </div>
       </div>
 
+      <!-- Zoom Setting (Before API Keys) -->
+      <div class="setting-section">
+        <div class="zoom-row">
+          <span class="setting-label" style="margin: 0;" id="txtZoomLabel">🔍 ズーム (Panel Zoom)</span>
+          <div class="zoom-controller">
+            <button class="zoom-btn" id="btnZoomOut" type="button" title="Zoom Out">−</button>
+            <span class="zoom-value" id="txtZoomValue">${options.zoomLevel || 100}%</span>
+            <button class="zoom-btn" id="btnZoomIn" type="button" title="Zoom In">+</button>
+            <button class="zoom-reset-btn" id="btnZoomReset" type="button" title="Reset (100%)">⟲</button>
+          </div>
+        </div>
+        <div class="setting-hint" id="txtZoomHint">Adjust panel UI and font scale (70% - 130%).</div>
+      </div>
+
+      <!-- Gemini Setting (Before DeepL) -->
+      <div class="setting-section">
+        <div class="setting-label">
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            ${options.geminiIconUri ? `<img src="${options.geminiIconUri}" class="setting-section-header-icon" alt="" />` : '🤖'}
+            <span>Google Gemini API Key</span>
+          </span>
+          <span class="status-badge" id="geminiBadge">Not Configured</span>
+        </div>
+        <div class="input-row">
+          <input type="password" id="geminiInput" class="setting-input" placeholder="Google AI Studio API Key" />
+          <button class="btn-save" id="btnSaveGemini">Save</button>
+          <button class="btn-delete" id="btnDeleteGemini">Delete</button>
+        </div>
+        <div class="setting-hint" id="txtGeminiHint">Free tier available at Google AI Studio. Get key at aistudio.google.com.</div>
+      </div>
+
       <!-- DeepL Setting -->
       <div class="setting-section">
         <div class="setting-label">
@@ -1214,23 +1451,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         <div class="setting-hint" id="txtDeeplHint">Free plan available (500,000 chars/month free). Get key at deepl.com/pro-api (ends with :fx).</div>
       </div>
 
-      <!-- Gemini Setting -->
-      <div class="setting-section">
-        <div class="setting-label">
-          <span style="display: inline-flex; align-items: center; gap: 6px;">
-            ${options.geminiIconUri ? `<img src="${options.geminiIconUri}" class="setting-section-header-icon" alt="" />` : '🤖'}
-            <span>Google Gemini API Key</span>
-          </span>
-          <span class="status-badge" id="geminiBadge">Not Configured</span>
-        </div>
-        <div class="input-row">
-          <input type="password" id="geminiInput" class="setting-input" placeholder="Google AI Studio API Key" />
-          <button class="btn-save" id="btnSaveGemini">Save</button>
-          <button class="btn-delete" id="btnDeleteGemini">Delete</button>
-        </div>
-        <div class="setting-hint" id="txtGeminiHint">Free tier available at Google AI Studio. Get key at aistudio.google.com.</div>
-      </div>
-
       <!-- Hover Setting -->
       <div class="setting-section">
         <div class="toggle-row">
@@ -1239,12 +1459,9 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         </div>
         <div class="setting-hint" id="txtHoverHint">Automatically display a translation preview tooltip when hovering over selected code.</div>
       </div>
-
-      <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
-        <button class="btn-save" id="btnDoneModal">Done</button>
-      </div>
     </div>
   </div>
+</div>
 
   <script>
     const vscode = acquireVsCodeApi();
@@ -1252,6 +1469,12 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     let currentPanelLang = '${panelLanguage}';
     let currentSourceLang = savedState.sourceLang || '${defaultSource}';
     let currentTargetLang = savedState.targetLang || '${defaultTarget}';
+
+    // 同一言語の衝突を初期化時に自動補正
+    if (currentSourceLang !== 'auto' && currentSourceLang === currentTargetLang) {
+      currentTargetLang = (currentSourceLang === 'en') ? 'ja' : 'en';
+    }
+
     let currentSourceTabs = (savedState.sourceTabs && Array.isArray(savedState.sourceTabs) && savedState.sourceTabs.length > 0)
       ? savedState.sourceTabs
       : ${JSON.stringify(initialSourceTabs)};
@@ -1264,6 +1487,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     let activePickerType = null; // 'source' | 'target'
     let debounceTimer = null;
     let lastTranslatedResult = '';
+    let lastDetectedSourceLang = '';
+    let isComposing = false;
+    let currentZoom = Number(savedState.zoomLevel) || Number(${options.zoomLevel || 100}) || 100;
+    let hasDeeplConfigured = false;
+    let hasGeminiConfigured = false;
 
     // i18n Dictionaries
     const I18N = {
@@ -1292,6 +1520,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         geminiHint: "Free quota available via Google AI Studio. Get your API key at aistudio.google.com.",
         hoverLabel: "💡 Editor Hover Translation Tooltip",
         hoverHint: "Automatically display a translation preview tooltip when hovering over selected code.",
+        zoomLabel: "🔍 Panel Zoom",
+        zoomHint: "Adjust panel UI and font scale (70% - 130%).",
         configured: "✅ Configured",
         notConfigured: "Not Configured",
         done: "Done",
@@ -1300,7 +1530,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Select Source Language",
         selectTargetLang: "Select Target Language",
         searchLang: "Search languages...",
-        noMatchLang: "No matching languages found"
+        noMatchLang: "No matching languages found",
+        suggestedLangPrefix: "Translate from:"
       },
       ja: {
         brandTitle: "Google 翻訳 (IDE Edition)",
@@ -1317,7 +1548,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         btnClear: "✕ クリア",
         btnCopy: "📋 コピー",
         btnInsert: "📝 エディタに挿入",
-        translating: "翻訳中...",
+        translating: "通訳中...",
         modalTitle: "⚙️ 設定 & 翻訳構成",
         panelLanguageLabel: "🌐 パネル表示言語",
         panelLanguageHint: "この翻訳パネル自体の表示言語（UI言語）を切り替えます。",
@@ -1327,6 +1558,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         geminiHint: "Google AI Studio で無料利用可能。aistudio.google.com で「Get API key」よりワンクリックで作成。",
         hoverLabel: "💡 エディタホバー翻訳ツールチップ",
         hoverHint: "エディタ上でテキストを選択してホバーした際に、自動で翻訳プレビューを表示します。",
+        zoomLabel: "🔍 ズーム",
+        zoomHint: "パネルの文字・エリアの表示倍率を調整します (70% - 130%)。",
         configured: "✅ 設定済み",
         notConfigured: "未設定",
         done: "完了",
@@ -1335,7 +1568,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "翻訳元言語を選択",
         selectTargetLang: "翻訳先言語を選択",
         searchLang: "言語を検索...",
-        noMatchLang: "一致する言語が見つかりません"
+        noMatchLang: "一致する言語が見つかりません",
+        suggestedLangPrefix: "原文の言語:"
       },
       zh: {
         brandTitle: "Google 翻译 (IDE Edition)",
@@ -1370,7 +1604,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "选择源语言",
         selectTargetLang: "选择目标语言",
         searchLang: "搜索语言...",
-        noMatchLang: "未找到匹配的语言"
+        noMatchLang: "未找到匹配的语言",
+        suggestedLangPrefix: "原文语言:"
       },
       ko: {
         brandTitle: "Google 번역 (IDE Edition)",
@@ -1405,7 +1640,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "출발어 선택",
         selectTargetLang: "도착어 선택",
         searchLang: "언어 검색...",
-        noMatchLang: "일치하는 언어가 없습니다"
+        noMatchLang: "일치하는 언어가 없습니다",
+        suggestedLangPrefix: "원문 언어:"
       },
       vi: {
         brandTitle: "Google Dịch (Phiên bản IDE)",
@@ -1440,7 +1676,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Chọn ngôn ngữ nguồn",
         selectTargetLang: "Chọn ngôn ngữ đích",
         searchLang: "Tìm kiếm ngôn ngữ...",
-        noMatchLang: "Không tìm thấy ngôn ngữ phù hợp"
+        noMatchLang: "Không tìm thấy ngôn ngữ phù hợp",
+        suggestedLangPrefix: "Dịch từ:"
       },
       de: {
         brandTitle: "Google Übersetzer (IDE Edition)",
@@ -1475,7 +1712,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Ausgangssprache auswählen",
         selectTargetLang: "Zielsprache auswählen",
         searchLang: "Sprachen suchen...",
-        noMatchLang: "Keine passenden Sprachen gefunden"
+        noMatchLang: "Keine passenden Sprachen gefunden",
+        suggestedLangPrefix: "Ausgangssprache:"
       },
       es: {
         brandTitle: "Google Traductor (IDE Edition)",
@@ -1510,7 +1748,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Seleccionar idioma de origen",
         selectTargetLang: "Seleccionar idioma de destino",
         searchLang: "Buscar idiomas...",
-        noMatchLang: "No se encontraron idiomas coincidentes"
+        noMatchLang: "No se encontraron idiomas coincidentes",
+        suggestedLangPrefix: "Traducir del:"
       },
       fr: {
         brandTitle: "Google Traduction (IDE Edition)",
@@ -1545,7 +1784,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Sélectionner la langue source",
         selectTargetLang: "Sélectionner la langue cible",
         searchLang: "Rechercher des langues...",
-        noMatchLang: "Aucune langue correspondante trouvée"
+        noMatchLang: "Aucune langue correspondante trouvée",
+        suggestedLangPrefix: "Traduire du:"
       },
       hi: {
         brandTitle: "Google अनुवाद (IDE Edition)",
@@ -1580,7 +1820,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "स्रोत भाषा चुनें",
         selectTargetLang: "लक्ष्य भाषा चुनें",
         searchLang: "भाषा खोजें...",
-        noMatchLang: "कोई मेल खाती भाषा नहीं मिली"
+        noMatchLang: "कोई मेल खाती भाषा नहीं मिली",
+        suggestedLangPrefix: "मूल भाषा:"
       },
       it: {
         brandTitle: "Google Traduttore (IDE Edition)",
@@ -1615,7 +1856,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Seleziona lingua di partenza",
         selectTargetLang: "Seleziona lingua di destinazione",
         searchLang: "Cerca lingue...",
-        noMatchLang: "Nessuna lingua corrispondente trovata"
+        noMatchLang: "Nessuna lingua corrispondente trovata",
+        suggestedLangPrefix: "Traduci da:"
       },
       pt: {
         brandTitle: "Google Tradutor (IDE Edition)",
@@ -1650,7 +1892,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Selecionar idioma de origem",
         selectTargetLang: "Selecionar idioma de destino",
         searchLang: "Pesquisar idiomas...",
-        noMatchLang: "Nenhum idioma correspondente encontrado"
+        noMatchLang: "Nenhum idioma correspondente encontrado",
+        suggestedLangPrefix: "Traduzir de:"
       },
       ru: {
         brandTitle: "Google Переводчик (IDE Edition)",
@@ -1685,7 +1928,8 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         selectSourceLang: "Выберите исходный язык",
         selectTargetLang: "Выберите язык перевода",
         searchLang: "Поиск языков...",
-        noMatchLang: "Подходящих языков не найдено"
+        noMatchLang: "Подходящих языков не найдено",
+        suggestedLangPrefix: "Исходный язык:"
       }
     };
 
@@ -1741,7 +1985,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Settings Modal elements
     const btnCloseModal = document.getElementById('btnCloseModal');
-    const btnDoneModal = document.getElementById('btnDoneModal');
     const settingsModal = document.getElementById('settingsModal');
     const panelLangSelect = document.getElementById('panelLangSelect');
     const defaultSourceSelect = document.getElementById('defaultSourceSelect');
@@ -1755,6 +1998,167 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     const btnDeleteGemini = document.getElementById('btnDeleteGemini');
     const geminiBadge = document.getElementById('geminiBadge');
     const hoverCheckbox = document.getElementById('hoverCheckbox');
+
+    // Phonetic & Checkmark & Zoom Elements
+    const sourcePhonetic = document.getElementById('sourcePhonetic');
+    const targetPhonetic = document.getElementById('targetPhonetic');
+    const providerCurrentCheck = document.getElementById('providerCurrentCheck');
+    const optCheckDeepl = document.getElementById('optCheckDeepl');
+    const optCheckGemini = document.getElementById('optCheckGemini');
+
+    // Language Suggestion Banner
+    const langSuggestionBanner = document.getElementById('langSuggestionBanner');
+    const txtLangSuggestionPrefix = document.getElementById('txtLangSuggestionPrefix');
+    const btnApplySuggestedLang = document.getElementById('btnApplySuggestedLang');
+    let currentSuggestedLang = null;
+
+    function detectScriptLanguage(text) {
+      if (!text || !text.trim()) return null;
+      const t = text.trim();
+      // 日本語（ひらがな・カタカナ）
+      if (/[\u3040-\u309F\u30A0-\u30FF]/.test(t)) {
+        return 'ja';
+      }
+      // 韓国語（ハングル）
+      if (/[\uAC00-\uD7AF\u1100-\u11FF]/.test(t)) {
+        return 'ko';
+      }
+      // キリル文字（ロシア語など）
+      if (/[\u0400-\u04FF]/.test(t)) {
+        return 'ru';
+      }
+      // アラビア文字
+      if (/[\u0600-\u06FF]/.test(t)) {
+        return 'ar';
+      }
+      // タイ文字
+      if (/[\u0E00-\u0E7F]/.test(t)) {
+        return 'th';
+      }
+      // ヒンディー文字（デーヴァナーガリー）
+      if (/[\u0900-\u097F]/.test(t)) {
+        return 'hi';
+      }
+      // ギリシャ文字
+      if (/[\u0370-\u03FF]/.test(t)) {
+        return 'el';
+      }
+      // 漢字（中国語）
+      if (/[\u4E00-\u9FFF]/.test(t)) {
+        return 'zh';
+      }
+      // ベトナム語（声調付きラテン文字）
+      if (/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(t)) {
+        return 'vi';
+      }
+      // 英語（英字を含み、全文字がASCII文字）
+      if (/[a-zA-Z]/.test(t)) {
+        var isAllAscii = true;
+        for (var i = 0; i < t.length; i++) {
+          if (t.charCodeAt(i) > 127) {
+            isAllAscii = false;
+            break;
+          }
+        }
+        if (isAllAscii) return 'en';
+      }
+      return null;
+    }
+
+    function showLangSuggestion(langCode) {
+      if (!langSuggestionBanner || !btnApplySuggestedLang) return;
+      if (loadingIndicator) loadingIndicator.style.display = 'none';
+      currentSuggestedLang = langCode;
+      const t = I18N[currentPanelLang] || I18N.en;
+      if (txtLangSuggestionPrefix) {
+        txtLangSuggestionPrefix.textContent = t.suggestedLangPrefix || 'Translate from:';
+      }
+      const langLabel = getLangDisplayLabel(langCode) || langCode;
+      btnApplySuggestedLang.textContent = langLabel;
+      langSuggestionBanner.style.display = 'flex';
+    }
+
+    function hideLangSuggestion() {
+      currentSuggestedLang = null;
+      if (langSuggestionBanner) {
+        langSuggestionBanner.style.display = 'none';
+      }
+    }
+
+    function updateSuggestionState(apiDetectedLang) {
+      if (!sourceText || !sourceText.value.trim() || currentSourceLang === 'auto') {
+        hideLangSuggestion();
+        return;
+      }
+      let candidate = (apiDetectedLang && apiDetectedLang !== 'auto' && apiDetectedLang !== 'undefined')
+        ? apiDetectedLang
+        : null;
+      const scriptLang = detectScriptLanguage(sourceText.value);
+      if (scriptLang && (!candidate || candidate === currentSourceLang)) {
+        candidate = scriptLang;
+      }
+      if (candidate && candidate !== currentSourceLang) {
+        showLangSuggestion(candidate);
+      } else {
+        hideLangSuggestion();
+      }
+    }
+
+    if (btnApplySuggestedLang) {
+      btnApplySuggestedLang.addEventListener('click', () => {
+        if (!currentSuggestedLang) return;
+        const newLang = currentSuggestedLang;
+        hideLangSuggestion();
+        setSourceLanguage(newLang);
+      });
+    }
+
+    const btnZoomOut = document.getElementById('btnZoomOut');
+    const btnZoomIn = document.getElementById('btnZoomIn');
+    const btnZoomReset = document.getElementById('btnZoomReset');
+    const txtZoomValue = document.getElementById('txtZoomValue');
+    const txtZoomLabel = document.getElementById('txtZoomLabel');
+    const txtZoomHint = document.getElementById('txtZoomHint');
+
+    function updateKeyCheckmarks() {
+      if (optCheckDeepl) {
+        if (hasDeeplConfigured) optCheckDeepl.classList.add('configured');
+        else optCheckDeepl.classList.remove('configured');
+      }
+      if (optCheckGemini) {
+        if (hasGeminiConfigured) optCheckGemini.classList.add('configured');
+        else optCheckGemini.classList.remove('configured');
+      }
+      if (providerCurrentCheck) {
+        const val = providerSelect ? providerSelect.value : currentProvider;
+        const isCurrentConfigured = (val === 'deepl' && hasDeeplConfigured) || (val === 'gemini' && hasGeminiConfigured);
+        if (isCurrentConfigured) providerCurrentCheck.classList.add('configured');
+        else providerCurrentCheck.classList.remove('configured');
+      }
+    }
+
+    function applyZoom(level) {
+      currentZoom = Math.min(Math.max(Number(level) || 100, 70), 140);
+      if (typeof document !== 'undefined' && document.body && document.body.style) {
+        document.body.style.zoom = (currentZoom / 100).toString();
+      }
+      if (txtZoomValue) txtZoomValue.textContent = currentZoom + '%';
+      vscode.postMessage({ command: 'saveZoom', value: currentZoom });
+      const curState = (typeof vscode.getState === 'function' ? vscode.getState() : null) || {};
+      if (typeof vscode.setState === 'function') {
+        vscode.setState({ ...curState, zoomLevel: currentZoom });
+      }
+    }
+
+    if (btnZoomOut) {
+      btnZoomOut.addEventListener('click', () => applyZoom(currentZoom - 5));
+    }
+    if (btnZoomIn) {
+      btnZoomIn.addEventListener('click', () => applyZoom(currentZoom + 5));
+    }
+    if (btnZoomReset) {
+      btnZoomReset.addEventListener('click', () => applyZoom(100));
+    }
 
     function getShortLanguageName(code) {
       if (code === 'auto') {
@@ -1896,13 +2300,50 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
     }
 
-    function updateLangUi(lang, isSource) {
-      if (isSource) {
-        currentSourceLang = lang;
-      } else {
-        currentTargetLang = lang;
+    function setSourceLanguage(code) {
+      if (!code) return;
+      if (code !== 'auto' && code === currentTargetLang) {
+        const fallbackTarget = (currentSourceLang !== 'auto' && currentSourceLang !== code)
+          ? currentSourceLang
+          : (code === 'en' ? 'ja' : 'en');
+        currentTargetLang = fallbackTarget;
+        currentTargetTabs = updateTabList(currentTargetTabs, currentTargetLang);
+      }
+      currentSourceLang = code;
+      if (code !== 'auto') {
+        currentSourceTabs = updateTabList(currentSourceTabs, code);
       }
       renderTabs();
+      persistLanguageState();
+      updateSuggestionState(null);
+      triggerTranslation(true);
+    }
+
+    function setTargetLanguage(code) {
+      if (!code) return;
+      hideLangSuggestion();
+      if (code === currentSourceLang) {
+        const fallbackSource = (currentTargetLang && currentTargetLang !== code)
+          ? currentTargetLang
+          : 'auto';
+        currentSourceLang = fallbackSource;
+        if (currentSourceLang !== 'auto') {
+          currentSourceTabs = updateTabList(currentSourceTabs, currentSourceLang);
+        }
+      }
+      currentTargetLang = code;
+      currentTargetTabs = updateTabList(currentTargetTabs, code);
+      renderTabs();
+      persistLanguageState();
+      triggerTranslation(true);
+    }
+
+    function updateLangUi(lang, isSource) {
+      if (isSource) {
+        setSourceLanguage(lang);
+      } else {
+        setTargetLanguage(lang);
+      }
     }
 
     function applyI18n(lang) {
@@ -1941,11 +2382,17 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       setSafeText('txtGeminiHint', t.geminiHint);
       setSafeText('txtHoverLabel', t.hoverLabel);
       setSafeText('txtHoverHint', t.hoverHint);
-      setSafeText('btnDoneModal', t.done);
       setSafeText('btnSaveDeepl', t.save);
       setSafeText('btnDeleteDeepl', t.delete);
       setSafeText('btnSaveGemini', t.save);
       setSafeText('btnDeleteGemini', t.delete);
+      setSafeText('txtZoomLabel', t.zoomLabel || '🔍 Panel Zoom');
+      setSafeText('txtZoomHint', t.zoomHint || 'Adjust panel UI and font scale (70% - 130%).');
+      setSafeText('txtLangSuggestionPrefix', t.suggestedLangPrefix || 'Translate from:');
+
+      if (currentSuggestedLang && btnApplySuggestedLang) {
+        btnApplySuggestedLang.textContent = getLangDisplayLabel(currentSuggestedLang) || currentSuggestedLang;
+      }
 
       const searchInputEl = document.getElementById('langSearchInput');
       if (searchInputEl) {
@@ -1960,10 +2407,6 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Settings Modal handlers
     btnCloseModal.addEventListener('click', () => {
-      settingsModal.classList.remove('active');
-    });
-
-    btnDoneModal.addEventListener('click', () => {
       settingsModal.classList.remove('active');
     });
 
@@ -1983,23 +2426,13 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     defaultSourceSelect.addEventListener('change', () => {
       const val = defaultSourceSelect.value;
       vscode.postMessage({ command: 'updateConfig', key: 'sourceLanguage', value: val });
-      currentSourceLang = val;
-      if (val !== 'auto') {
-        currentSourceTabs = updateTabList(currentSourceTabs, val);
-      }
-      renderTabs();
-      persistLanguageState();
-      triggerTranslation(true);
+      setSourceLanguage(val);
     });
 
     defaultTargetSelect.addEventListener('change', () => {
       const val = defaultTargetSelect.value;
       vscode.postMessage({ command: 'updateConfig', key: 'targetLanguage', value: val });
-      currentTargetLang = val;
-      currentTargetTabs = updateTabList(currentTargetTabs, val);
-      renderTabs();
-      persistLanguageState();
-      triggerTranslation(true);
+      setTargetLanguage(val);
     });
 
     btnSaveDeepl.addEventListener('click', () => {
@@ -2050,10 +2483,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         const lang = chip.getAttribute('data-source');
         if (!lang) return;
         if (currentSourceLang !== lang) {
-          currentSourceLang = lang;
-          renderTabs();
-          persistLanguageState();
-          triggerTranslation(true);
+          setSourceLanguage(lang);
         }
       });
     }
@@ -2065,10 +2495,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         const lang = chip.getAttribute('data-target');
         if (!lang) return;
         if (currentTargetLang !== lang) {
-          currentTargetLang = lang;
-          renderTabs();
-          persistLanguageState();
-          triggerTranslation(true);
+          setTargetLanguage(lang);
         }
       });
     }
@@ -2207,19 +2634,9 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     function selectPickerLanguage(code) {
       if (activePickerType === 'source') {
-        currentSourceLang = code;
-        if (code !== 'auto') {
-          currentSourceTabs = updateTabList(currentSourceTabs, code);
-        }
-        renderTabs();
-        persistLanguageState();
-        triggerTranslation(true);
+        setSourceLanguage(code);
       } else if (activePickerType === 'target') {
-        currentTargetLang = code;
-        currentTargetTabs = updateTabList(currentTargetTabs, code);
-        renderTabs();
-        persistLanguageState();
-        triggerTranslation(true);
+        setTargetLanguage(code);
       }
       closeLanguagePicker();
     }
@@ -2276,15 +2693,45 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
     });
 
-    // Realtime typing & Debounce (350ms)
+    // Realtime typing & Debounce (350ms) with IME Support
+    sourceText.addEventListener('compositionstart', () => {
+      isComposing = true;
+    });
+
+    sourceText.addEventListener('compositionend', () => {
+      isComposing = false;
+      updateSuggestionState(null);
+      if (sourceText.value.trim()) {
+        triggerTranslation(false);
+      }
+    });
+
     sourceText.addEventListener('input', () => {
       updateCharCount();
       if (!sourceText.value.trim()) {
+        latestRequestId++; // 進行中のリクエスト結果を破棄
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
+        }
         const t = I18N[currentPanelLang] || I18N.en;
         targetText.textContent = t.targetPlaceholder;
         targetText.classList.add('placeholder');
         lastTranslatedResult = '';
+        if (sourcePhonetic) {
+          sourcePhonetic.textContent = '';
+          sourcePhonetic.style.display = 'none';
+        }
+        if (targetPhonetic) {
+          targetPhonetic.textContent = '';
+          targetPhonetic.style.display = 'none';
+        }
+        hideLangSuggestion();
         loadingIndicator.style.display = 'none';
+        errorBanner.style.display = 'none';
+        return;
+      }
+      updateSuggestionState(null);
+      if (isComposing) {
         return;
       }
       triggerTranslation(false);
@@ -2297,9 +2744,25 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       const delay = immediate ? 0 : 350;
       debounceTimer = setTimeout(() => {
         const text = sourceText.value.trim();
-        if (!text) return;
+        if (!text) {
+          loadingIndicator.style.display = 'none';
+          hideLangSuggestion();
+          return;
+        }
 
-        loadingIndicator.style.display = 'flex';
+        const requestFrom = currentSourceLang;
+
+        // 同一言語の衝突をフェイルセーフとして防止
+        if (currentSourceLang !== 'auto' && currentSourceLang === currentTargetLang) {
+          currentTargetLang = (currentSourceLang === 'en') ? 'ja' : 'en';
+          currentTargetTabs = updateTabList(currentTargetTabs, currentTargetLang);
+          renderTabs();
+          persistLanguageState();
+        }
+
+        if (!langSuggestionBanner || langSuggestionBanner.style.display !== 'flex') {
+          loadingIndicator.style.display = 'flex';
+        }
         errorBanner.style.display = 'none';
 
         const reqId = ++currentRequestId;
@@ -2310,7 +2773,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
           requestId: reqId,
           targetLang: currentTargetLang,
           text: text,
-          from: currentSourceLang,
+          from: requestFrom,
           to: currentTargetLang,
           provider: providerSelect.value,
         });
@@ -2319,8 +2782,22 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
     // Swap Languages
     btnSwap.addEventListener('click', () => {
-      const newSource = currentTargetLang;
-      const newTarget = currentSourceLang === 'auto' ? 'en' : currentSourceLang;
+      hideLangSuggestion();
+      let newSource = currentTargetLang;
+      let newTarget = currentSourceLang;
+
+      if (newTarget === 'auto') {
+        if (lastDetectedSourceLang && lastDetectedSourceLang !== newSource) {
+          newTarget = lastDetectedSourceLang;
+        } else {
+          newTarget = (newSource === 'en') ? 'ja' : 'en';
+        }
+      }
+
+      // 同一言語の衝突を確実に防ぐ
+      if (newSource === newTarget) {
+        newTarget = (newSource === 'en') ? 'ja' : 'en';
+      }
 
       currentSourceLang = newSource;
       currentTargetLang = newTarget;
@@ -2331,7 +2808,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       renderTabs();
       persistLanguageState();
 
-      // Also swap text if target has result
+      // また、ターゲットに翻訳結果がある場合は入力欄にスワップ
       if (lastTranslatedResult) {
         sourceText.value = lastTranslatedResult;
         updateCharCount();
@@ -2344,12 +2821,26 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
     renderTabs();
 
     btnClearSource.addEventListener('click', () => {
+      latestRequestId++; // 進行中のリクエスト結果を破棄
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
       const t = I18N[currentPanelLang] || I18N.en;
       sourceText.value = '';
+      hideLangSuggestion();
       updateCharCount();
       targetText.textContent = t.targetPlaceholder;
       targetText.classList.add('placeholder');
       lastTranslatedResult = '';
+      if (sourcePhonetic) {
+        sourcePhonetic.textContent = '';
+        sourcePhonetic.style.display = 'none';
+      }
+      if (targetPhonetic) {
+        targetPhonetic.textContent = '';
+        targetPhonetic.style.display = 'none';
+      }
+      loadingIndicator.style.display = 'none';
       errorBanner.style.display = 'none';
       sourceText.focus();
     });
@@ -2430,6 +2921,7 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         }
       });
       updateProviderInputConstraints(value);
+      updateKeyCheckmarks();
     }
 
     if (providerCurrentBtn && providerOptionsMenu) {
@@ -2485,6 +2977,10 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
       if (msg.command === 'settingsState') {
         const t = I18N[currentPanelLang] || I18N.en;
+        hasDeeplConfigured = !!msg.hasDeepl;
+        hasGeminiConfigured = !!msg.hasGemini;
+        updateKeyCheckmarks();
+
         if (msg.hasDeepl) {
           deeplBadge.textContent = t.configured;
           deeplBadge.classList.add('configured');
@@ -2503,6 +2999,11 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
         hoverCheckbox.checked = !!msg.hoverEnabled;
 
+        if (typeof msg.zoomLevel === 'number' && msg.zoomLevel) {
+          currentZoom = msg.zoomLevel;
+          applyZoom(currentZoom);
+        }
+
         if (msg.provider) {
           providerSelect.value = msg.provider;
           updateCustomProviderUi(msg.provider);
@@ -2516,16 +3017,27 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
 
         if (msg.sourceLanguage) {
           defaultSourceSelect.value = msg.sourceLanguage;
+          if (!savedState.sourceLang) {
+            currentSourceLang = msg.sourceLanguage;
+          }
         }
 
         if (msg.targetLanguage) {
           defaultTargetSelect.value = msg.targetLanguage;
+          if (!savedState.targetLang) {
+            currentTargetLang = msg.targetLanguage;
+          }
         }
 
-        if (msg.sourceTabs && Array.isArray(msg.sourceTabs) && msg.sourceTabs.length > 0) {
+        // 同一言語の衝突を補正
+        if (currentSourceLang !== 'auto' && currentSourceLang === currentTargetLang) {
+          currentTargetLang = (currentSourceLang === 'en') ? 'ja' : 'en';
+        }
+
+        if (msg.sourceTabs && Array.isArray(msg.sourceTabs) && msg.sourceTabs.length > 0 && !savedState.sourceTabs) {
           currentSourceTabs = msg.sourceTabs;
         }
-        if (msg.targetTabs && Array.isArray(msg.targetTabs) && msg.targetTabs.length > 0) {
+        if (msg.targetTabs && Array.isArray(msg.targetTabs) && msg.targetTabs.length > 0 && !savedState.targetTabs) {
           currentTargetTabs = msg.targetTabs;
         }
         renderTabs();
@@ -2539,6 +3051,24 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         if (msg.targetLang && msg.targetLang !== currentTargetLang) {
           return;
         }
+        if (msg.sourceLang && currentSourceLang !== 'auto' && msg.sourceLang !== currentSourceLang) {
+          return;
+        }
+
+        // 入力欄が既に空になっていた場合は遅延した古い結果を破棄
+        if (!sourceText.value.trim()) {
+          const t = I18N[currentPanelLang] || I18N.en;
+          targetText.textContent = t.targetPlaceholder;
+          targetText.classList.add('placeholder');
+          lastTranslatedResult = '';
+          loadingIndicator.style.display = 'none';
+          return;
+        }
+
+        if (msg.detectedSourceLanguage) {
+          lastDetectedSourceLang = msg.detectedSourceLanguage;
+        }
+
         lastTranslatedResult = msg.text || '';
         targetText.textContent = msg.text || '';
         if (!msg.text) {
@@ -2548,13 +3078,46 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
         } else {
           targetText.classList.remove('placeholder');
         }
-        errorBanner.style.display = 'none';
-
-        if (msg.detectedSourceLanguage && currentSourceLang === 'auto') {
-          const autoChip = document.getElementById('chipSourceAuto');
-          if (autoChip) {
-            autoChip.textContent = (I18N[currentPanelLang]?.chipAuto || 'Detect Language') + ' (' + msg.detectedSourceLanguage + ')';
+        if (msg.targetTransliteration) {
+          if (targetPhonetic) {
+            targetPhonetic.textContent = msg.targetTransliteration;
+            targetPhonetic.style.display = 'block';
           }
+        } else if (targetPhonetic) {
+          targetPhonetic.textContent = '';
+          targetPhonetic.style.display = 'none';
+        }
+
+        if (msg.sourceTransliteration) {
+          if (sourcePhonetic) {
+            sourcePhonetic.textContent = msg.sourceTransliteration;
+            sourcePhonetic.style.display = 'block';
+          }
+        } else if (sourcePhonetic) {
+          sourcePhonetic.textContent = '';
+          sourcePhonetic.style.display = 'none';
+        }
+
+        errorBanner.style.display = 'none';
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'none';
+        }
+
+        if (msg.detectedSourceLanguage) {
+          lastDetectedSourceLang = msg.detectedSourceLanguage;
+
+          if (currentSourceLang === 'auto') {
+            const autoChip = document.getElementById('chipSourceAuto');
+            if (autoChip) {
+              const langLabel = getLangDisplayLabel(msg.detectedSourceLanguage) || msg.detectedSourceLanguage;
+              autoChip.textContent = (I18N[currentPanelLang]?.chipAuto || 'Detect Language') + ' (' + langLabel + ')';
+            }
+            hideLangSuggestion();
+          } else {
+            updateSuggestionState(msg.detectedSourceLanguage);
+          }
+        } else {
+          updateSuggestionState(null);
         }
       } else if (msg.command === 'error' || msg.type === 'error' || msg.command === 'translationError') {
         if (msg.requestId !== undefined && msg.requestId !== latestRequestId) {
@@ -2575,7 +3138,9 @@ export function getTranslationHtml(options: TranslationHtmlOptions): string {
       }
       applyI18n(currentPanelLang);
       renderTabs();
+      applyZoom(currentZoom);
       updateCustomProviderUi(currentProvider);
+      updateKeyCheckmarks();
       vscode.postMessage({ command: 'getSettings' });
     } catch (err) {
       console.error('Error during initial UI setup:', err);

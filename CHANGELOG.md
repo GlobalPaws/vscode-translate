@@ -2,6 +2,18 @@
 
 All notable changes to the "ai-multi-translate" extension will be documented in this file.
 
+## [0.1.8] - 2026-10-24
+
+### Changed
+- Added green checkmark badge on provider options when API keys are configured.
+- Added pronunciation and transliteration display for both source and target text.
+- Added panel UI and font zoom adjustment control (70% - 130%) with reset support.
+- Improved settings modal with sticky header during scroll and streamlined modal footer.
+- Added Google Translate style "Translate from: [Language]" suggestion link next to the clear button.
+- Repositioned live translating status indicator next to the clear button in the source footer.
+- Enhanced free translation reliability by adding Google secondary endpoint (clients5) and improving MyMemory match selection.
+- Prevented outer window scrollbars in compact/sidebar mode and added internal scrollbars to translation output.
+
 ## [0.1.7] - 2026-09-24
 
 ### Changed

@@ -7,6 +7,8 @@ export interface TranslationResult {
   text: string;
   detectedSourceLanguage?: string;
   provider: string;
+  sourceTransliteration?: string;
+  targetTransliteration?: string;
 }
 
 export interface ITranslator {
